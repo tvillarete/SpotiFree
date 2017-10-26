@@ -120,6 +120,21 @@ html::-webkit-scrollbar-thumb
     display: flex;
     overflow: auto;
 
+    .header {
+        font-size: 4em;
+        flex: 1 0 100%;
+        padding-left: 0em;
+        margin-top: 1em;
+    }
+
+    .subheader {
+        font-size: 1.5em;
+        flex: 1 0 100%;
+        padding-left: 1em;
+        margin: 0 auto;
+        margin-bottom: 1em;
+    }
+
     .head {
         z-index: 15;
         position: fixed;
@@ -165,6 +180,12 @@ html::-webkit-scrollbar-thumb
 
                 .nav-button {
                     width: 100%;
+                    cursor: pointer;
+                    transition: all 0.15s ease-in-out;
+
+                    &:hover {
+                        background: rgb(50,50,50);
+                    }
 
                     &.selected {
                         border-bottom: 0.1em solid dodgerblue;
@@ -232,13 +253,6 @@ html::-webkit-scrollbar-thumb
             max-width: 100em;
             margin: auto;
             width: 100%;
-
-            .header {
-                font-size: 4em;
-                flex: 1 0 100%;
-                padding-left: 0em;
-                margin: 1em auto;
-            }
 
             .action-button {
                 height: 3em;
@@ -432,6 +446,7 @@ html::-webkit-scrollbar-thumb
             @keyframes fadeup {
                 0% {
                     opacity: 0;
+                    transform: translateY(10%);
                 }
             }
 
@@ -578,6 +593,12 @@ html::-webkit-scrollbar-thumb
                     }
                 }
 
+                &.in-album {
+                    p {
+                        margin-top: 0.55em;
+                    }
+                }
+
                 img {
                     height: 3em;
                     width: 3em;
@@ -617,7 +638,7 @@ html::-webkit-scrollbar-thumb
 }
 
 .controls {
-    z-index: 15;
+    z-index: 14;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -776,6 +797,72 @@ html::-webkit-scrollbar-thumb
     }
 }
 
+.playlist-selector {
+    z-index: 16;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    max-width: 35em;
+    max-height: 45em;
+    overflow: auto;
+    background: rgb(60,60,60);
+    animation: fade-up 0.3s;
+
+
+    .playlist-selector-item {
+        font-size: 1.5em;
+        height: 2.5em;
+        line-height: 2.5em;
+        padding-left: 2em;
+        border-bottom: $border-divider;
+        cursor: pointer;
+
+        &:hover {
+            background: rgb(40,40,40);
+        }
+    }
+
+    .button {
+        position: absolute;
+        bottom: 1em;
+        left: 0;
+        right: 0;
+        margin: auto;
+        height: 3em;
+        width: 10em;
+        font-size: 1.5em;
+        line-height: 2.9em;
+        text-align: center;
+        border-radius: 4px;
+        background: dodgerblue;
+        cursor: pointer;
+
+        &:active {
+            filter: brightness(85%);
+        }
+    }
+}
+
+.disabled {
+    position: fixed;
+    z-index: 15;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,.7)
+}
+
+@keyframes fade-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20%);
+    }
+}
+
 
 @-moz-keyframes spin {
     from { -moz-transform: rotate(0deg); }
@@ -894,46 +981,4 @@ html::-webkit-scrollbar-thumb
         transform: scale(.9);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

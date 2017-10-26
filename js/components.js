@@ -7,34 +7,62 @@ var Player = {
         `;
     },
 
+    subheader: function(name) {
+        return `
+            <div class="subheader">
+                ${name}
+            </div>
+        `;
+    },
+
     audio: (name, url) => {
         return `
-            <audio class="audio" id="music" name="${name}" src="${url}"
+            <audio class="audio" id="music" title="${name}" name="${name}" src="${url}"
              ontimeupdate="setInterval(updateTrackTime(this), 1000)">
             </audio>
         `;
     },
 
     playlistModal: (name, artist, album, url, artwork) => {
+        if (localStorage.playlists) {
+            playlists = JSON.parse(localStorage.playlists);
+        }
         var view = `
-            <div class="playlist-modal">
+            <div class="disabled"></div>
+            <div class="playlist-selector">
                 ${Player.header('Choose a playlist')}
-            </div>
         `;
+        for (var i=0; i< playlists.length; i++) {
+            view = view.concat(`
+                ${ListItem.playlistSelection(playlists[i][0], name, artist, album, url, artwork)}
+            `);
+        }
+        view = view.concat(`${Button.closePlaylistModal()}`)
+        return view;
     }
 }
 
 var ListItem = {
-    playlist: function(name) {
+    playlist: function(name, description) {
         return `
             <div class="playlist playlist-item"
-             onclick="PlaylistManager.showPlaylist('${name}')">
+             onclick="PlaylistManager.showPlaylist('${name}', '${description}')">
                 ${name}
             </div>
         `;
     },
 
-    song: function(id, name, artwork, artist, album, url, index) {
+    playlistSelection: function(playlist, name, artist, album, url, artwork) {
+        return `
+            <div class="playlist playlist-selector-item"
+             onclick="PlaylistManager.addToPlaylist('${playlist}', '${name}',
+              '${artist}', '${album}', '${url}', '${artwork}')">
+                ${playlist}
+            </div>
+        `;
+    },
+
+    song: function(id, name, artwork, artist, album, url, index, artwork) {
         return `
             <div class="search-result">
                 <img class="artwork" src="${artwork}">
@@ -52,16 +80,19 @@ var ListItem = {
         `;
     },
 
-    inAlbum: function(id, name, artist, album, url, index) {
+    inAlbum: function(id, name, artist, album, url, index, artwork) {
         return `
-            <div class="search-result" style="cursor: pointer">
+            <div class="search-result in-album" style="cursor: pointer">
                 <div class="search-result-info" id="${id}" value="${url}"
                  name="${id}" onclick="AudioManager.playSong('${name}', '${artist}', '${url}')">
-                    <p>${name}</p>
-                    <p>${artist} &bull; ${album}</p>
-                    <p class="track">${index}</p>
+                    <!--<p class="track">${index}</p>-->
+                    <p class="track">${name}</p>
+
                 </div>
-                <div class="add" value="${url}" onclick="getPlaylists()">
+                <div class="add" value="${url}"
+                 onclick="PlaylistManager.showSelector(
+                     '${name}', '${artist}', '${album}', '${url}', '${artwork}'
+                 )">
                     <img src="/SpotiFree/files/images/playlist_add.png">
                 </div>
             </div>
@@ -103,6 +134,15 @@ var Button = {
             </div>
         `;
     },
+
+    closePlaylistModal: () => {
+        return `
+            <div class="button action-button"
+             onclick="PlaylistManager.hideSelector()">
+                Cancel
+            </div>
+        `
+    }
 }
 
 var AlbumView = {

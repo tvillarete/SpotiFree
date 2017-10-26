@@ -12,16 +12,17 @@ var PlaylistManager = {
         for (var i=0; i<playlists.length; i++) {
             console.log(playlists[i][0]);
             $('#playlist-browser').append(
-                ListItem.playlist(playlists[i][0])
+                ListItem.playlist(playlists[i][0], playlists[i][1])
             );
         }
     },
 
-    showPlaylist: playlist => {
+    showPlaylist: (playlist, description) => {
         $('.view').hide();
         $('.search-results').empty().show();
         var view = `
             ${Player.header(playlist)}
+            ${Player.subheader(description)}
             ${Button.shuffle()}
         `;
         var results = [];
@@ -52,8 +53,19 @@ var PlaylistManager = {
         updateResults(results);
     },
 
-    addToPlaylist: (playlist) => {
-
+    addToPlaylist: (playlistName, name, artist, album, url, artwork) => {
+        if (localStorage.playlists) {
+            playlists = JSON.parse(localStorage.playlists);
+            for (var i=0; i< playlists.length; i++) {
+                if (playlistName === playlists[i][0]) {
+                    playlists[i].push(
+                        [{name: name, artist: artist, album: album, track: 0, url:url}]
+                    );
+                }
+            }
+            localStorage.playlists = JSON.stringify(playlists);
+        }
+        PlaylistManager.hideSelector();
     },
 
     createPlaylist: () => {
@@ -79,7 +91,13 @@ var PlaylistManager = {
         return isValid;
     },
 
-    showSelector: (name, artist, album, url, artwork) => {
-        $('.player').append(Player.playlistModal(name, artist, album, url, artwork));
+    showSelector: (name, artist, album, url, artwork = null) => {
+        $('.main').append(`${Player.playlistModal(name, artist, album, url, artwork)}`);
+    },
+
+    hideSelector: () => {
+        $('.playlist-selector, .disabled').fadeOut("fast", function() {
+            $(this).remove();
+        })
     }
 }

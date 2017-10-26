@@ -8,7 +8,7 @@ var artist;
 var album;
 var link;
 var track;
-var currentVolume = 50;
+var currentVolume = 35;
 var viewIndex;
 
 function loadTasks() {
@@ -71,11 +71,11 @@ $("#search").submit(function(event){
                     );
                 } if (searchType != "all") {
                     $(".search-results").append(
-                        ListItem.inAlbum(i, name, artist, album, link, track)
+                        ListItem.inAlbum(i, name, artist, album, link, track, artwork)
                     );
                 } else {
                     $(".search-results").append(
-                        ListItem.song(i, name, artist, album, link, track)
+                        ListItem.song(i, name, artist, album, link, track, artwork)
                     );
                 }
             }
@@ -175,27 +175,6 @@ var updatebar = function(x) {
     $('.progress-bar > div').css('width', percentage+'%');
     track.currentTime = maxduration * percentage / 100;
 };
-
-function createTrack(url) {
-    $(".audio").remove();
-    $(".search-result").removeClass("playing");
-    var newIndex;
-    $(".search-result-info").each(function() {
-        if ($(this).attr("value") == playList[index]['url']){
-            $(".search-result-info").removeClass("playing");
-            $(this).addClass("playing");
-        }
-    })
-    $(".controls").append(
-        Player.audio(playList[index]['name'], url)
-    );
-    myAddListener();
-    $(".play").fadeOut("fast", function() {
-        $(".pause").fadeIn("fast");
-    });
-    $(".audio").trigger("play");
-    SetVolume(currentVolume);
-}
 
 function SetVolume(val)
 {
