@@ -43,6 +43,23 @@ var Player = {
 }
 
 var ListItem = {
+    artist: (name) => {
+        return `
+            <div class="artist-item" onclick="ApiManager.search('${name}')">
+                ${name}
+            </div>
+        `;
+    },
+
+    album: (name, imgSrc) => {
+        return `
+            <div class="album-item" onclick="ApiManager.search('${name}')">
+                <img src="${imgSrc}">
+                <p>${name}</p>
+            </div>
+        `;
+    },
+
     playlist: function(name, description) {
         return `
             <div class="playlist playlist-item"
@@ -62,7 +79,7 @@ var ListItem = {
         `;
     },
 
-    song: function(id, name, artwork, artist, album, url, index, artwork) {
+    song: function(id, name, artist, album, url, index, artwork) {
         return `
             <div class="search-result">
                 <img class="artwork" src="${artwork}">

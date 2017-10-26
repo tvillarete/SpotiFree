@@ -27,8 +27,9 @@ var AudioManager = {
        var audio = document.getElementById("music");
         if (index < playList.length-0.5) {
             index++;
-            createTrack(playList[index]['url']);
-            updateTrackInfo(playList[index]['name'], playList[index]['artist'], playList[index]['album']);
+            var song = playList[index];
+            AudioManager.playSong(song['name'], song['artist'], song['url']);
+            updateTrackInfo(song['name'], song['artist'], playList[index]['album']);
         }
         else {
             audio.currentTime = audio.duration;
@@ -39,7 +40,8 @@ var AudioManager = {
         var audio = document.getElementById("music");
         if (audio.currentTime <= 3 && index > 0) {
             index--;
-            createTrack(playList[index]['url']);
+            var song = playList[index];
+            AudioManager.playSong(song['name'], song['artist'], song['url']);
             updateTrackInfo();
         }
         else {
@@ -63,7 +65,10 @@ var AudioManager = {
             Player.audio(playList[index]['name'], url)
         );
 
-        myAddListener();
+        document.getElementById('music').addEventListener(
+            'ended', playNextTrack, false
+        );
+
         $(".play").fadeOut("fast", function() {
             $(".pause").fadeIn("fast");
         });
@@ -71,7 +76,13 @@ var AudioManager = {
         SetVolume(currentVolume);
     },
 
-     shuffle: () => {
+    setVolume(val) {
+        var player = document.getElementById('music');
+        currentVolume = val;
+        player.volume = val/100;
+    },
+
+    shuffle: () => {
         var currentIndex = playList.length, temporaryValue, randomIndex;
         while (0 !== currentIndex) {
             randomIndex = Math.floor(Math.random() * currentIndex);
@@ -81,7 +92,7 @@ var AudioManager = {
             playList[randomIndex] = temporaryValue;
         }
         index = 0;
-        createTrack(playList[0]['url']);
+        AudioManager.playSong(playList[0]['name'], playList[0]['artist'], playList[0]['url']);
         updateTrackInfo();
     }
 }

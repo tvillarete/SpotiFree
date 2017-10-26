@@ -12,8 +12,9 @@ var currentVolume = 35;
 var viewIndex;
 
 function loadTasks() {
-    getData({type: "album"}, $("#album-browser"));
-    getData({type: "artist"}, $("#artist-browser"));
+    //getData({type: "album"}, $("#album-browser"));
+    ApiManager.getArtistData();
+    ApiManager.getAlbumData();
     $("#album-browser, #artist-browser").hide();
     $(".logo-background").delay(2000).fadeOut("fast");
 }
@@ -21,117 +22,84 @@ function loadTasks() {
 $("#playlist-browser").hide();
 
 $("#search").submit(function(event){
-    $(".view").hide();
-    $('.search-results').empty();
-    $(".search-results").show();
     event.preventDefault();
-    if (request) {
-        request.abort();
+});
+
+function handleMusic(response){
+    currentAlbum = null;
+    results = JSON.parse(response);
+    $(".search-results").hide();
+    $(".search-results").empty();
+    if (searchType == 'all') {
+        $(".search-results").append(
+            Button.shuffle('album', 'all')
+        );
     }
-    var $form = $(this);
-    var serializedData = $form.serialize();
-
-    request = $.ajax({
-        url: "get_music.php",
-        type: "post",
-        data: serializedData,
-    });
-
-    request.done(function (response){
-        handleMusic(response);
-    });
-
-    function handleMusic(response){
-        currentAlbum = null;
-        results = JSON.parse(response);
-        $(".search-results").hide();
-        $(".search-results").empty();
-        if (searchType == 'all') {
-            $(".search-results").append(
-                Button.shuffle('album', 'all')
-            );
+    $(".search-results").show();
+    for (i=0; i<results.length; i++) {
+        var artwork = "/SpotiFree/files/music/"+results[i]['artist']+"/"+results[i]['album']+"/Artwork.png";
+        var name = results[i]['name'];
+        if (/^\d.*\s/.test(name)) {
+            name = name.slice(3);
         }
-        $(".search-results").show();
-        for (i=0; i<results.length; i++) {
-            var artwork = "/SpotiFree/files/music/"+results[i]['artist']+"/"+results[i]['album']+"/Artwork.png";
-            var name = results[i]['name'];
-            if (/^\d.*\s/.test(name)) {
-                name = name.slice(3);
-            }
-            artist = results[i]['artist'];
-            album = results[i]['album'];
-            link = results[i]['url'];
-            track = results[i]['track'];
+        artist = results[i]['artist'];
+        album = results[i]['album'];
+        link = results[i]['url'];
+        track = results[i]['track'];
 
-            if (name){
-                if (album != currentAlbum && searchType != "all") {
-                    currentAlbum = album;
-                    $(".search-results").append(
-                        AlbumView.header(i, artwork, artist, album)
-                    );
-                } if (searchType != "all") {
-                    $(".search-results").append(
-                        ListItem.inAlbum(i, name, artist, album, link, track, artwork)
-                    );
-                } else {
-                    $(".search-results").append(
-                        ListItem.song(i, name, artist, album, link, track, artwork)
-                    );
+        if (name){
+            if (album != currentAlbum && searchType != "all") {
+                currentAlbum = album;
+                $(".search-results").append(
+                    AlbumView.header(i, artwork, artist, album)
+                );
+            } if (searchType != "all") {
+                $(".search-results").append(
+                    ListItem.inAlbum(i, name, artist, album, link, track, artwork)
+                );
+            } else {
+                $(".search-results").append(
+                    ListItem.song(i, name, artist, album, link, track, artwork)
+                );
+            }
+        }
+        if (name == $(".audio").attr("name")) {
+            $("#"+i).addClass("playing");
+        }
+    }
+
+    $(document).ready(function() {
+        var audioElement = document.createElement('audio');
+        audioElement.pause();
+        audioElement.addEventListener('ended', function() {
+            this.play();
+        }, false);
+
+        $(".album-play").click(function() {
+            playList = [];
+            for (i = 0; i < results.length; i++) {
+                if (results[i]['album'] == $(this).attr("name")) {
+                    playList.push(results[i]);
                 }
             }
-            if (name == $(".audio").attr("name")) {
-                $("#"+i).addClass("playing");
-            }
-        }
+            index = 0;
+            createTrack(playList[0]['url']);
+            updateTrackInfo();
+        })
 
-        $(document).ready(function() {
-            var audioElement = document.createElement('audio');
-            audioElement.pause();
-            audioElement.addEventListener('ended', function() {
-                this.play();
-            }, false);
-
-            $(".album-play").click(function() {
+        $(".shuffle").click(function() {
+            playList = results;
+            if ($(this).attr("value") == "album") {
                 playList = [];
                 for (i = 0; i < results.length; i++) {
                     if (results[i]['album'] == $(this).attr("name")) {
                         playList.push(results[i]);
                     }
                 }
-                index = 0;
-                createTrack(playList[0]['url']);
-                updateTrackInfo();
-            })
-
-            $(".shuffle").click(function() {
-                playList = results;
-                if ($(this).attr("value") == "album") {
-                    playList = [];
-                    for (i = 0; i < results.length; i++) {
-                        if (results[i]['album'] == $(this).attr("name")) {
-                            playList.push(results[i]);
-                        }
-                    }
-                }
-                AudioManager.shuffle();
-            });
+            }
+            AudioManager.shuffle();
         });
-    }
-});
-
-function getPlaylists() {
-    $(".view, .search-results").hide();
-    $(".playlist-selector").empty();
-    $(".playlist-selector").append("</div><h1>Choose a playlist</h1>");
-    for (i=0; i<playlists.length; i++) {
-        var name = playlists[i][0];
-        $(".playlist-selector").append("<div class='playlist-choice' name='"+name+"'><p>"+name+"</p></div>");
-    }
-    $(".playlist-selector").append("<div class='cancel-button'><p>Cancel</p></div>");
-    $(".playlist-selector, .disabled").show();
-    $(".cancel-button").click(function() {
-        $(".playlist-selector, .disabled").hide();
-    })
+    });
 }
 
 var timeDrag;
@@ -202,6 +170,10 @@ function updateTrackTime(track){
     }
 }
 
+function updateResults(newResults) {
+    results = newResults;
+}
+
 function updateTrackInfo() {
     name = playList[index]['name'];
     artist = playList[index]['artist'];
@@ -211,10 +183,6 @@ function updateTrackInfo() {
     $(".playback-artwork").replaceWith("<div class='playback-artwork'><img src='"+artwork+"'></div>")
     $(".playback-title").html("<h1>"+name+"</h1>");
     $(".playback-artist").html("<h2>"+artist+"</h2>");
-}
-
-function updateResults(newResults) {
-    results = newResults;
 }
 
 function playNextTrack() {
@@ -231,12 +199,6 @@ function playNextTrack() {
         audio.src = playList[index]['url'];
         audio.play();
     }
-}
-
-// add a listener function to the ended event
-function myAddListener(){
-    var audio = document.getElementById("music");
-    audio.addEventListener('ended', playNextTrack, false);
 }
 
 $(document).on("click", '.nav-button', function() {
@@ -272,13 +234,6 @@ $(document).on("click", '.nav-button', function() {
             break;
     }
 
-    if (type) {
-        data = {type: type};
-        if (!$("."+type+"-item")[0] && !$("#playlist-browser")) {
-            getData(data, view);
-        }
-    }
-
     if (viewIndex > newViewIndex) {
         view.removeClass("slide-in-left slide-in-up").addClass("slide-in-right");
     } else if (viewIndex < newViewIndex) {
@@ -293,66 +248,3 @@ $(document).on("click", '.nav-button', function() {
     })
     viewIndex = newViewIndex;
 });
-
-
-
-function getData(data, view) {
-    request = $.ajax({
-        url: "get_metadata.php",
-        type: "post",
-        data: data
-    });
-
-    request.done(function (response){
-        meta = JSON.parse(response);
-        var text;
-        view.empty();
-        switch(view.attr("id")) {
-            case "artist-browser":
-                text = 'Artists';
-                break;
-            case "album-browser":
-                text = 'Albums';
-                break;
-            case "playlist-browser":
-                text = 'Playlists';
-                break;
-                              }
-        view.append(Player.header(text));
-        for (i=0; i<meta.length; i++) {
-            if (meta[i]['response'] == "album") {
-                var url = "/SpotiFree/files/music/"+meta[i]['artist']+"/"+meta[i]['album']+"/Artwork.png";
-                view.append("<div class='album-item' name='"+meta[i]['album']+"'><img  src='"+url+"'><p>"+meta[i]['album']+"</p></div>");
-            } else if (meta[i]['response'] == "artist") {
-                view.append("<div class='artist-item'>"+meta[i]['artist']+"</div>");
-            } else if (meta[i]['response'] == "song") {
-                var url = "/SpotiFree/files/music/"+meta[i]['artist']+"/"+meta[i]['album']+"/Artwork.png";
-                view.append(`
-                    <div class="song-item">
-                        <img class="artwork" src="${url}">
-                        <div id="${i}" value=${meta[i]['url']} name="${i}">
-                            <p>${meta[i]['name']}</p>
-                            <p>${meta[i]['artist']} &bull; ${meta[i]['album']}</p>
-                        </div>
-                        <div class="add hi" value="${meta[i]['url']}">
-                            <img src="/SpotiFree/files/images/playlist_add.png">
-                        </div>
-                    </div>
-                `);
-            }
-        }
-        $(".album-item").click(function() {
-            var searchVal = $(this).attr("name");
-            $("#album-browser").fadeOut("fast", function() {
-                $(".searchbox").val(searchVal).trigger("submit");
-            });
-        })
-        $(".artist-item").click(function() {
-            var searchVal = $(this).text();
-            $("#artist-browser").fadeOut("fast", function() {
-                $(".searchbox").val(searchVal).trigger("submit");
-            });
-
-        })
-    });
-}

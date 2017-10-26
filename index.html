@@ -33,8 +33,11 @@
                         <div class="nav-button" id="nav-albums" value=1>Albums</div>
                         <div class="nav-button" id="nav-playlists" value=3>Playlists</div>
                     </div>
-                    <form id="search">
-                        <input class="searchbox" name="value" type="text" value="" placeholder="Search" autocomplete="off"   content="width=device-width, initial-scale=1.3, maximum-scale=1.0, user-scalable=no" tabindex="0"/>
+                    <form id="search" onsubmit="ApiManager.search()">
+                        <input class="searchbox" name="value" type="text"
+                         value="" placeholder="Search" autocomplete="off"
+                         content="width=device-width, initial-scale=1.3,
+                         maximum-scale=1.0, user-scalable=no" tabindex="0"/>
                     </form>
                 </div>
             </div>
@@ -100,5 +103,6 @@
         <script src="js/components.js"></script>
         <script src="js/playlist_manager.js"></script>
         <script src="js/audio_manager.js"></script>
+        <script src="js/api_manager.js"></script>
     </body>
 </html>
