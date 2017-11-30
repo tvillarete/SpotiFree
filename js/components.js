@@ -134,8 +134,8 @@ var ListItem = {
                     <p>${artist} &bull; ${album}</p>
                     <p class="track">${index}</p>
                 </div>
-                <div class="remove" name="${playlist}">
-                    <!-- Remove goes here -->
+                <div class="remove" name="${playlist}"
+                 onclick="PlaylistManager.removeFromPlaylist()">
                 </div>
             </div>
         `;

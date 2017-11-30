@@ -25,11 +25,14 @@ var ApiManager = {
         request.done(function(response){
             var data = JSON.parse(response);
             var len = data.length;
+            var viewSection = `<div class="view-section">`
 
             view.append(Player.header('Artists'));
             for (var i=0; i<len; i++) {
-                view.append(ListItem.artist(data[i]['artist']));
+                viewSection = viewSection.concat(ListItem.artist(data[i]['artist']));
             }
+            viewSection = viewSection.concat(`</div>`);
+            view.append(viewSection);
         });
     },
 
@@ -40,12 +43,15 @@ var ApiManager = {
         request.done(function(response){
             var data = JSON.parse(response);
             var len = data.length;
+            var viewSection = `<div class="view-section">`;
 
             view.append(Player.header('Albums'));
             for (var i=0; i<len; i++) {
                 var imgSrc = `/SpotiFree/files/music/${data[i]['artist']}/${data[i]['album']}/Artwork.png`;
-                view.append(ListItem.album(data[i]['album'], imgSrc));
+                viewSection = viewSection.concat(`${ListItem.album(data[i]['album'], imgSrc)}`);
             }
+            viewSection = viewSection.concat(`</div>`);
+            view.append(viewSection);
         });
     },
 

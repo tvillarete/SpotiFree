@@ -1,6 +1,7 @@
 var playlists = [];
 var results;
 var playList;
+var queue = [];
 var index;
 var searchType;
 var currentAlbum;
@@ -83,7 +84,8 @@ function handleMusic(response){
                 }
             }
             index = 0;
-            createTrack(playList[0]['url']);
+            var song = playList[0];
+            AudioManager.playSong(song['name'], song['artist'], song['url']);
             updateTrackInfo();
         })
 
@@ -174,30 +176,48 @@ function updateResults(newResults) {
     results = newResults;
 }
 
+function pushToQueue(song) {
+    queue.push(song);
+}
+
+function popQueue() {
+    return queue.pop();
+}
+
 function updateTrackInfo() {
     name = playList[index]['name'];
     artist = playList[index]['artist'];
     album = playList[index]['album'];
     artwork = "/SpotiFree/files/music/"+artist+"/"+album+"/Artwork.png";
-    $(".controls .cover-bg").css("background","url('"+artwork+"')");
+    $(".cover-bg").css("background","url('"+artwork+"')");
     $(".playback-artwork").replaceWith("<div class='playback-artwork'><img src='"+artwork+"'></div>")
     $(".playback-title").html("<h1>"+name+"</h1>");
     $(".playback-artist").html("<h2>"+artist+"</h2>");
 }
 
 function playNextTrack() {
-    if (index < playList.length-1) {
-        index++;
+    console.log("HEIHIH");
+    if (queue.length > 0) {
+        var song = popQueue();
+        AudioManager.playSong(song['name'], song['artist'], song['track']);
         updateTrackInfo();
-        $(".search-result").each(function() {
-        if ($(this).attr("value") == playList[index]['url']){
-            $(".search-result").removeClass("playing");
-            $(this).addClass("playing");
+        console.log(queue.length);
+    }
+    else {
+        console.log("HERE");
+        if (index < playList.length-1) {
+            index++;
+            updateTrackInfo();
+            $(".search-result").each(function() {
+            if ($(this).attr("value") == playList[index]['url']){
+                $(".search-result").removeClass("playing");
+                $(this).addClass("playing");
+            }
+        })
+            var audio = document.getElementById("music");
+            audio.src = playList[index]['url'];
+            audio.play();
         }
-    })
-        var audio = document.getElementById("music");
-        audio.src = playList[index]['url'];
-        audio.play();
     }
 }
 

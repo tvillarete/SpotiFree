@@ -10,7 +10,6 @@ var PlaylistManager = {
             </div>
         `);
         for (var i=0; i<playlists.length; i++) {
-            console.log(playlists[i][0]);
             $('#playlist-browser').append(
                 ListItem.playlist(playlists[i][0], playlists[i][1])
             );
@@ -66,6 +65,11 @@ var PlaylistManager = {
             localStorage.playlists = JSON.stringify(playlists);
         }
         PlaylistManager.hideSelector();
+    },
+
+    removeFromPlaylist: (playlist, url) => {
+        alert(playlist);
+        alert(url);
     },
 
     createPlaylist: () => {
