@@ -1,0 +1,66 @@
+.logo-container {
+    position: fixed;
+    height: 20em;
+    width: 20em;
+    top: 0em;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    .logo {
+        position: relative;
+        text-transform:capitalize;
+        font-variant:small-caps;
+        font-weight:bold;
+        animation: logo 2s;
+
+        div {
+            position: absolute;
+            background: rgb(255,255,255);
+            border-radius: 4px;
+            text-align: center;
+            color: rgb(70,70,70);
+            box-sizing: border-box;
+
+            &:nth-child(1) {
+                z-index: 1;
+                height: 4em;
+                width: 16em;
+                box-shadow: none;
+            }
+
+            &:nth-child(2) {
+                height: 20em;
+                width: 4em;
+            }
+
+            &:nth-child(3) {
+                height: 20em;
+                width: 4em;
+                right: 4em;
+            }
+
+            &:nth-child(4) {
+                height: 4em;
+                width: 4em;
+                top: 6em;
+                font-size: 2em;
+                line-height: 5em;
+                animation: headphone 2s;
+            }
+
+            &:nth-child(5) {
+                height: 4em;
+                width: 4em;
+                top: 6em;
+                font-size: 2em;
+                left: 6em;
+                line-height: 5em;
+                animation: headphone 2s;
+            }
+
+        }
+    }
+
+}

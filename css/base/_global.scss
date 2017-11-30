@@ -1,0 +1,29 @@
+html {
+    touch-action: manipulation;
+}
+
+body {
+    font: 100% $font-stack;
+    color: $primary-color;
+    background-color: $darkest;
+}
+
+.disabled {
+    position: fixed;
+    z-index: 15;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,.7)
+}
+
+.blur-bg {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-size: cover !important;
+    transition: background 1s ease-in-out;
+    background: url(files/bg_blur.jpg);
+    animation: fade .5s;
+}

@@ -14,7 +14,7 @@ var ApiManager = {
             $('.view').hide();
             $('.search-results').empty().show();
 
-            handleMusic(data);
+            ViewManager.viewSearchResults(JSON.parse(data));
         });
     },
 
@@ -53,6 +53,10 @@ var ApiManager = {
             viewSection = viewSection.concat(`</div>`);
             view.append(viewSection);
         });
+    },
+
+    getArtwork: (artist, album) => {
+        return `/SpotiFree/files/music/${artist}/${album}/Artwork.png`;
     },
 
     newRequest: (url, data) => {

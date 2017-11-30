@@ -1,0 +1,164 @@
+.controls {
+    z-index: 14;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5em;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: black;
+    box-shadow: rgba(0, 0, 0, 0.3) 0 -10px 16px 0;
+
+    .progress-bar {
+        z-index: 6;
+        position: fixed;
+        background: black;
+        height: .5em;
+        bottom: 5em;
+        left: 0;
+        right: 0;
+        margin: auto;
+        transition: all .15s ease-in-out;
+
+        div {
+            position: relative;
+            display: block;
+            height: 100%;
+            position: relative;
+            border-radius: none;
+            background: rgba(255,255,255,.8);
+
+            .progress-bar-handle {
+                position: absolute;
+                height: 1em;
+                width: 1em;
+                border-radius: 50%;
+                margin-top: -.25em;
+                right: -.6em;
+                background: white;
+                box-shadow: 0 0 5px black;
+            }
+        }
+    }
+
+    .playback-info {
+        position: relative;
+        display: flex;
+        height: 6em;
+        width: 100%;
+
+        .cover-bg {
+            transform: translate3d(0,0,0);
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            filter: blur(20px);
+            background-size: cover !important;
+            background: url(files/bg.jpg);
+            transition: background 1s ease-in-out;
+        }
+
+        .playback {
+            position: absolute;
+            left: 0;
+            right: 0;
+            max-width: 10em;
+            z-index: 101;
+            margin: 1em auto;
+        }
+
+        .playback-artwork {
+            z-index: 5;
+            height: 5.5em;
+            width: 5.5em;
+            background: rgba(30,30,30,.9);
+            pointer-events: none;
+
+            img{
+                z-index: 1;
+                position: absolute;
+                max-height: 5.5em;
+            }
+        }
+
+        .playback-text {
+            position: absolute;
+            display: flex;
+            height: 100%;
+            left: 5.5em;
+            right: 0em;
+            background: rgba(30,30,30,.5);
+        }
+
+        .playback-title, .playback-artist {
+            line-height: 0.4;
+            padding-left: 2em;
+        }
+
+        .playback-time {
+            height: 100%;
+            width: 5em;
+            justify-content: center;
+            line-height: 2.5em;
+            display: flex;
+            position: absolute;
+            right: 0;
+        }
+
+        #vol-control {
+            position: absolute;
+            right: 7em;
+            bottom: 3em;
+        }
+    }
+
+    .nav-controls {
+        z-index: 100;
+        position: relative;
+        justify-content: center;
+        display: none;
+        height: 5em;
+        width: 100%;
+        margin: auto;
+        bottom: 0;
+        background: rgba(200,200,200,.3);
+
+        & img {
+            margin-right: 1em;
+            margin-left: 1em;
+            height: 5em;
+
+            &:active {
+                opacity: .5;
+            }
+        }
+
+        @media screen and (max-width: $max-width) {
+            display: flex;
+        }
+    }
+
+    @media screen and (max-width: $max-width) {
+        height: 11em;
+        .progress-bar {
+            bottom: 5em;
+        }
+
+        .playback-info {
+            .playback {
+                top: 6em;
+                max-width: 15em;
+                display: flex;
+                justify-content: space-between;
+            }
+        }
+
+        #vol-control {
+            display: none;
+        }
+    }
+}

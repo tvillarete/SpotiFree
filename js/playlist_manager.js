@@ -49,7 +49,7 @@ var PlaylistManager = {
         }
 
         $('#playlist-browser').empty().append(view).show();
-        updateResults(results);
+        ViewManager.searchResults = results;
     },
 
     addToPlaylist: (playlistName, name, artist, album, url, artwork) => {

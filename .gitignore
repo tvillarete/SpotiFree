@@ -5,6 +5,7 @@
 *.map
 *.swp
 *.swo
+css/.sass-cache/
 
 # Compiled source #
 # ####################

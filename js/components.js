@@ -101,7 +101,7 @@ var ListItem = {
         return `
             <div class="search-result in-album" style="cursor: pointer">
                 <div class="search-result-info" id="${id}" value="${url}"
-                 name="${id}" onclick="AudioManager.playSong('${name}', '${artist}', '${url}')">
+                 name="${id}" onclick="AudioManager.playSong('${name}', '${artist}', '${url}', true)">
                     <!--<p class="track">${index}</p>-->
                     <p class="track">${name}</p>
 
@@ -127,7 +127,7 @@ var ListItem = {
     inPlaylist: function(id, playlist, artwork, name, artist, album, url, index) {
         return `
             <div class="search-result" id=${id} value=${url} name=${id}
-             onclick="AudioManager.playSong('${name}', '${artist}', '${url}')">
+             onclick="AudioManager.playSong('${name}', '${artist}', '${url}', true)">
                 <img class="artwork" src="${artwork}">
                 <div id="${id}" value="${url}" name="${id}">
                     <p>${name}</p>
@@ -166,19 +166,19 @@ var AlbumView = {
     header: function(id, artwork, artist, album) {
         return `
             <div class="album-head">
-                <div class="album-head-bg" id="album-head-bg-${id}">
+                <div class="album-head-bg" style="background: url('${artwork}')">
                     <img src="${artwork}">
                 </div>
                 <div class="album-img" id="album-${id}">
                     <img src="${artwork}">
-                    <div class="album-play" name="${album}">
+                    <div class="album-play" name="${album}" onclick="AudioManager.playAlbum('${album}')">
                         <img src="/SpotiFree/files/images/play_arrow.svg">
                     </div>
                 </div>
                 <div class="album-info">
                     <h3>${album}</h3>
                     <h6>${artist}</h6>
-                <div class="shuffle" value="album" name="${album}">
+                <div class="shuffle" onclick="AudioManager.playAlbum('${album}', true)">
                     <p>Shuffle Play</p>
                 </div>
             </div>

@@ -1,65 +1,19 @@
 var AudioManager = {
-    playSong: (name, artist, url, fromQueue = false) => {
-        playList = results;
+    playlist: [],
+    index: 0,
+    volume: localStorage.volume ? parseInt(localStorage.volume) : 35,
 
-        if (!fromQueue) {
-            for (i=0; i<playList.length; i++) {
-                if (url == playList[i]['url']){
-                    index = i;
+    playSong: (name, artist, url, isNewPlaylist = false) => {
+        if (isNewPlaylist) {
+            AudioManager.playlist = ViewManager.searchResults;
+            $.each(ViewManager.searchResults, function(index, song) {
+                if (url == song.url) {
+                    AudioManager.index = index;
                 }
-            }
+            });
         }
-        updateTrackInfo();
         AudioManager.setupAudio(name, artist, url);
-    },
-
-    resume: () => {
-        $(".play").hide();
-        $(".pause").show();
-        $(".audio").trigger("play");
-    },
-
-    pause: () => {
-        $(".pause").hide();
-        $(".play").show();
-        $(".audio").trigger("pause");
-    },
-
-    skip: () => {
-       var audio = document.getElementById("music");
-       var song;
-       var album;
-       var fromQueue = false;
-
-        if (index < playList.length-1) {
-            if (queue.length > 0) {
-                song = queue.pop();
-                album = song['album'];
-                fromQueue = true;
-            } else {
-                index++;
-                song = playList[index];
-                album = playList[index]['album'];
-            }
-            AudioManager.playSong(song['name'], song['artist'], song['url'], fromQueue);
-            updateTrackInfo(song['name'], song['artist'], album);
-        }
-        else {
-            audio.currentTime = audio.duration;
-        }
-    },
-
-    previous: () => {
-        var audio = document.getElementById("music");
-        if (audio.currentTime <= 3 && index > 0) {
-            index--;
-            var song = playList[index];
-            AudioManager.playSong(song['name'], song['artist'], song['url']);
-            updateTrackInfo();
-        }
-        else {
-            audio.currentTime = 0;
-        }
+        ViewManager.updatePlayerState();
     },
 
     setupAudio: (name, artist, url) => {
@@ -78,38 +32,108 @@ var AudioManager = {
             Player.audio(name, url)
         );
 
-        document.getElementById('music').addEventListener(
+        var audio = document.getElementById('music');
+
+        audio.addEventListener(
             'ended', AudioManager.skip, false
         );
+        audio.volume = AudioManager.volume/100;
 
         $(".play").fadeOut("fast", function() {
             $(".pause").fadeIn("fast");
         });
         $(".audio").trigger("play");
-        SetVolume(currentVolume);
+    },
+
+    getSongAtIndex: (index = false) => {
+        index = index ? index : AudioManager.index;
+        return AudioManager.playlist[index];
+    },
+
+
+    playAlbum: (album, shuffle = false) => {
+        AudioManager.playlist = [];
+
+        $.each(ViewManager.searchResults, function(index, song) {
+            if (song.album == album) {
+                AudioManager.playlist.push(song);
+            }
+        });
+        if (shuffle) {
+            AudioManager.shuffle();
+        } else {
+            AudioManager.restartPlaylist();
+        }
+    },
+
+    restartPlaylist: () => {
+        AudioManager.index = 0;
+        var song = AudioManager.getSongAtIndex();
+        AudioManager.playSong(song.name, song.artist, song.url, false);
+    },
+
+    resume: () => {
+        $(".play").hide();
+        $(".pause").show();
+        $(".audio").trigger("play");
+    },
+
+    pause: () => {
+        $(".pause").hide();
+        $(".play").show();
+        $(".audio").trigger("pause");
+    },
+
+    skip: () => {
+       var audio = document.getElementById("music");
+
+        if (AudioManager.index < AudioManager.playlist.length-1) {
+            AudioManager.index++;
+            var song = AudioManager.getSongAtIndex();
+            AudioManager.playSong(song.name, song.artist, song.url);
+        }
+        else {
+            audio.currentTime = audio.duration;
+        }
+    },
+
+    previous: () => {
+        var audio = document.getElementById("music");
+        if (audio.currentTime <= 3 && AudioManager.index > 0) {
+            AudioManager.index--;
+            var song = AudioManager.getSongAtIndex();
+            AudioManager.playSong(song.name, song.artist, song.url);
+        }
+        else {
+            audio.currentTime = 0;
+        }
     },
 
     setVolume(val) {
-        var player = document.getElementById('music');
-        currentVolume = val;
-        player.volume = val/100;
+        var audio = document.getElementById('music');
+        if (audio) {
+            audio.volume = val/100;
+        }
+        AudioManager.volume = val;
+        localStorage.volume = val;
+    },
+
+    shuffle: () => {
+        var currentIndex = AudioManager.playlist.length;
+        var temp;
+        var randomIndex;
+        while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            temp = AudioManager.playlist[currentIndex];
+            AudioManager.playlist[currentIndex] = AudioManager.playlist[randomIndex];
+            AudioManager.playlist[randomIndex] = temp;
+        }
+        index = 0;
+        AudioManager.restartPlaylist();
     },
 
     addToQueue: (name, artist, album, artwork, url) => {
        queue.push({name: name, artist: artist, album, artwork: artwork, url: url});
-    },
-
-    shuffle: () => {
-        var currentIndex = playList.length, temporaryValue, randomIndex;
-        while (0 !== currentIndex) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-            temporaryValue = playList[currentIndex];
-            playList[currentIndex] = playList[randomIndex];
-            playList[randomIndex] = temporaryValue;
-        }
-        index = 0;
-        AudioManager.playSong(playList[0]['name'], playList[0]['artist'], playList[0]['url']);
-        updateTrackInfo();
     }
 }

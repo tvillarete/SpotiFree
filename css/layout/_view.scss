@@ -1,0 +1,106 @@
+.main {
+    overflow: auto;
+
+    .header {
+        font-size: 4em;
+        flex: 1 0 100%;
+        padding-left: 0.5em;
+        margin-top: 1em;
+    }
+
+    .subheader {
+        font-size: 1.5em;
+        flex: 1 0 100%;
+        padding-left: 1em;
+        margin: 0 0 1em 1em;
+    }
+}
+
+.view {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 11em;
+    overflow-x: hidden;
+    max-width: 70em;
+    margin: auto;
+    width: 100%;
+
+    .view-section {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    &#playlist-creator {
+        display: none;
+
+        h3 {
+            font-size: 1.5em;
+        }
+
+        input {
+            height: 2em;
+            width: 20em;
+            padding-left: 1em;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .submit-playlist-button {
+            margin: 2em 1em 1em 0;
+            width: 10em;
+            line-height: 3em;
+        }
+    }
+}
+
+.playlist-selector {
+    z-index: 16;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    max-width: 35em;
+    max-height: 45em;
+    overflow: auto;
+    background: rgb(60,60,60);
+    animation: fadeup 0.2s;
+
+    .playlist-selector-item {
+        font-size: 1.5em;
+        height: 2.5em;
+        line-height: 2.5em;
+        padding-left: 2em;
+        border-bottom: $border-divider;
+        cursor: pointer;
+
+        &:hover {
+            background: rgb(40,40,40);
+        }
+    }
+
+    .button {
+        position: absolute;
+        bottom: 1em;
+        left: 0;
+        right: 0;
+        margin: auto;
+        height: 3em;
+        width: 10em;
+        font-size: 1.5em;
+        line-height: 2.9em;
+        text-align: center;
+        border-radius: 4px;
+        background: dodgerblue;
+        cursor: pointer;
+
+        &:active {
+            filter: brightness(85%);
+        }
+    }
+}
+
