@@ -65,6 +65,7 @@ var PlaylistManager = {
             localStorage.playlists = JSON.stringify(playlists);
         }
         PlaylistManager.hideSelector();
+        ViewManager.displayToast('files/images/playlist_add.png', `Added to ${playlistName}`);
     },
 
     removeFromPlaylist: (playlist, url) => {

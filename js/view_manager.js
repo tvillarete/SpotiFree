@@ -35,5 +35,20 @@ var ViewManager = {
         `);
         $('.playback-title').html(`<h1>${song.name}</h1>`);
         $('.playback-artist').html(`${song.artist}`);
+    },
+
+    displayToast: (icon, text) => {
+        var toast = `
+            <div class="toast">
+                <img src="${icon}">
+                <h3>${text}</h3>
+            </div>
+        `;
+        $('body').append(toast);
+        setTimeout(function() {
+            $('.toast').fadeOut("fast", function() {
+                $('.toast').remove();
+            });
+        }, 1000);
     }
 }

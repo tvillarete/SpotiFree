@@ -1,11 +1,11 @@
 
 # Miscellaneous
 # ####################
-*.php
 *.map
 *.swp
 *.swo
 css/.sass-cache/
+keys.php
 
 # Compiled source #
 # ####################

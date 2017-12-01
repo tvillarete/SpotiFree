@@ -1,5 +1,6 @@
 var AudioManager = {
     playlist: [],
+    inQueue: 0,
     index: 0,
     volume: localStorage.volume ? parseInt(localStorage.volume) : 35,
 
@@ -14,6 +15,15 @@ var AudioManager = {
         }
         AudioManager.setupAudio(name, artist, url);
         ViewManager.updatePlayerState();
+        AudioManager.updateQueue();
+    },
+
+    updateQueue: () => {
+        if (AudioManager.getSongAtIndex().queue) {
+            AudioManager.playlist.splice(AudioManager.index, 1);
+            AudioManager.index--;
+            AudioManager.inQueue--;
+        }
     },
 
     setupAudio: (name, artist, url) => {
@@ -73,9 +83,14 @@ var AudioManager = {
     },
 
     resume: () => {
-        $(".play").hide();
-        $(".pause").show();
-        $(".audio").trigger("play");
+        var audio = document.getElementById('music');
+        if (!audio && AudioManager.inQueue) {
+            AudioManager.restartPlaylist();
+        } else {
+            $(".play").hide();
+            $(".pause").show();
+            $(".audio").trigger("play");
+        }
     },
 
     pause: () => {
@@ -133,7 +148,17 @@ var AudioManager = {
         AudioManager.restartPlaylist();
     },
 
-    addToQueue: (name, artist, album, artwork, url) => {
-       queue.push({name: name, artist: artist, album, artwork: artwork, url: url});
+    addToQueue: (name, artist, album, index, url) => {
+        var song = {
+            name: name,
+            artist: artist,
+            album: album,
+            track: index,
+            url: url,
+            queue: true
+        }
+        var index = AudioManager.index + 1 + AudioManager.inQueue++;
+        AudioManager.playlist.splice(index, 0, song);
+        ViewManager.displayToast('files/images/queue.png', 'Added to Queue');
     }
 }

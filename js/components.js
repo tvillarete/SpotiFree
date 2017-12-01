@@ -106,8 +106,10 @@ var ListItem = {
                     <p class="track">${name}</p>
 
                 </div>
-                <div class="add" value="${url}"
-                 onclick="PlaylistManager.showSelector(
+                <div class="song-option-button add-to-queue" onclick="AudioManager.addToQueue(
+                    '${name}', '${artist}', '${album}', ${index}, '${url}'
+                )">Queue</div>
+                <div class="song-option-button add" onclick="PlaylistManager.showSelector(
                      '${name}', '${artist}', '${album}', '${url}', '${artwork}'
                  )">
                     <img src="/SpotiFree/files/images/playlist_add.png">
