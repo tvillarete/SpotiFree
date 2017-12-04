@@ -14,45 +14,36 @@ var ApiManager = {
             $('.view').hide();
             $('.search-results').empty().show();
 
-            ViewManager.viewSearchResults(JSON.parse(data));
+            ViewManager.searchResults = JSON.parse(data);
+            ViewManager.populateResults();
         });
     },
 
     getArtistData: () => {
-        var request = ApiManager.newRequest('get_metadata.php', {type: 'artist'});
-        var view = $('#artist-browser');
-
-        request.done(function(response){
-            var data = JSON.parse(response);
-            var len = data.length;
-            var viewSection = `<div class="view-section">`
-
-            view.append(Player.header('Artists'));
-            for (var i=0; i<len; i++) {
-                viewSection = viewSection.concat(ListItem.artist(data[i]['artist']));
-            }
-            viewSection = viewSection.concat(`</div>`);
-            view.append(viewSection);
-        });
+        ApiManager.newRequest(
+            'get_metadata.php',
+            {type: 'artist'}).done(function(response) {
+                var item = JSON.parse(response);
+                $.each(item, function(index, item) {
+                    var artist = item.artist;
+                    AudioManager.artists.push(artist);
+                });
+            });
     },
 
     getAlbumData: () => {
-        var request = ApiManager.newRequest('get_metadata.php', {type: 'album'});
-        var view = $('#album-browser');
-
-        request.done(function(response){
-            var data = JSON.parse(response);
-            var len = data.length;
-            var viewSection = `<div class="view-section">`;
-
-            view.append(Player.header('Albums'));
-            for (var i=0; i<len; i++) {
-                var imgSrc = `/SpotiFree/files/music/${data[i]['artist']}/${data[i]['album']}/Artwork.png`;
-                viewSection = viewSection.concat(`${ListItem.album(data[i]['album'], imgSrc)}`);
-            }
-            viewSection = viewSection.concat(`</div>`);
-            view.append(viewSection);
-        });
+        ApiManager.newRequest(
+            'get_metadata.php',
+            {type: 'album'}).done(function(response) {
+                var data = JSON.parse(response);
+                $.each(data, function(index, data) {
+                    data = {
+                        name: data.album,
+                        artist: data.artist
+                    }
+                    AudioManager.albums.push(data);
+                });
+            });
     },
 
     getArtwork: (artist, album) => {

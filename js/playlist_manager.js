@@ -1,7 +1,9 @@
 var PlaylistManager = {
+    playlists: [],
+
     populatePlaylists: () => {
         if (localStorage.playlists) {
-            playlists = JSON.parse(localStorage.playlists);
+            PlaylistManager.playlists = JSON.parse(localStorage.playlists);
         }
         $("#playlist-browser").empty().append(`
             ${Player.header("Playlists")}
@@ -9,63 +11,66 @@ var PlaylistManager = {
                 <h2>Create Playlist</h2>
             </div>
         `);
-        for (var i=0; i<playlists.length; i++) {
+        $.each(PlaylistManager.playlists, function(index, playlist) {
             $('#playlist-browser').append(
-                ListItem.playlist(playlists[i][0], playlists[i][1])
+                ListItem.playlist(playlist.name, playlist.description)
             );
-        }
+        });
     },
 
-    showPlaylist: (playlist, description) => {
+    getPlaylist: (name, description) => {
         $('.view').hide();
         $('.search-results').empty().show();
         var view = `
-            ${Player.header(playlist)}
+            ${Player.header(name)}
             ${Player.subheader(description)}
             ${Button.shuffle()}
         `;
-        var results = [];
+        ViewManager.searchResults = [];
 
-        for (var i=0; i< playlists.length; i++) {
-            if (playlists[i][0] == playlist) {
-                for (var j=2; j<playlists[i].length; j++) {
-                    var metadata = playlists[i][j][0];
-                    var artwork = `/SpotiFree/files/music/${metadata['artist']}/${metadata['album']}/Artwork.png`;
-
-                    results.push(metadata);
+        $.each(PlaylistManager.playlists, function(index, playlist) {
+            if (playlist.name === name) {
+                $.each(playlist.songs, function(key, song) {
+                    var artwork = ApiManager.getArtwork(song.artist, song.album);
+                    var clickEvent = `AudioManager.playSong('${song.name}', '${song.artist}', '${song.url}', true)`;
 
                     view = view.concat(
-                        ListItem.inPlaylist(
-                            i, playlist, artwork,
-                            metadata['name'],
-                            metadata['artist'],
-                            metadata['album'],
-                            metadata['url'],
-                            metadata['track']
-                        )
+                        SearchResult.element(clickEvent, song.name, artwork, song)
                     );
-                }
+                    ViewManager.searchResults.push(song);
+                });
             }
-        }
-
-        $('#playlist-browser').empty().append(view).show();
-        ViewManager.searchResults = results;
+        });
     },
 
     addToPlaylist: (playlistName, name, artist, album, url, artwork) => {
-        if (localStorage.playlists) {
-            playlists = JSON.parse(localStorage.playlists);
-            for (var i=0; i< playlists.length; i++) {
-                if (playlistName === playlists[i][0]) {
-                    playlists[i].push(
-                        [{name: name, artist: artist, album: album, track: 0, url:url}]
-                    );
+        PlaylistManager.getPlaylists();
+        $.each(PlaylistManager.playlists, function(index, playlist) {
+            if (playlist.name === playlistName) {
+                var song = {
+                    name: name,
+                    artist: artist,
+                    album: album,
+                    track: 0,
+                    url: url
                 }
+                PlaylistManager.playlists[index].songs.push(song)
             }
-            localStorage.playlists = JSON.stringify(playlists);
-        }
+        });
+        PlaylistManager.updatePlaylists();
         PlaylistManager.hideSelector();
         ViewManager.displayToast('files/images/playlist_add.png', `Added to ${playlistName}`);
+    },
+
+    getPlaylists: () => {
+        if (localStorage.playlists) {
+            PlaylistManager.playlists = JSON.parse(localStorage.playlists);
+        }
+        return PlaylistManager.playlists;
+    },
+
+    updatePlaylists: () => {
+        localStorage.playlists = JSON.stringify(PlaylistManager.playlists);
     },
 
     removeFromPlaylist: (playlist, url) => {
@@ -76,14 +81,15 @@ var PlaylistManager = {
     createPlaylist: () => {
         var name = $('#playlist-name').val();
         var description = $('#playlist-desc').val();
-        var playlist = [name, description];
+        var playlist = {
+            name: name,
+            description: description,
+            songs: [],
+        }
 
         if (PlaylistManager.validate(name, description)) {
-            playlists.push(playlist);
-            localStorage.playlists = JSON.stringify(playlists);
-            PlaylistManager.populatePlaylists();
-            $('#playlist-creator').hide();
-            $('#playlist-browser').show();
+            PlaylistManager.playlists.push(playlist);
+            PlaylistManager.updatePlaylists();
         } else {
             alert('Please fill out all the forms!');
         }

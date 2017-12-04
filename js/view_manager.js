@@ -1,26 +1,10 @@
 var ViewManager = {
     searchResults: [],
+    viewStack: [],
 
-    viewSearchResults: results => {
-        var currentAlbum;
-        var searchResults = $('.search-results');
-
-        ViewManager.searchResults = [];
-        $.each(results, function(index, song) {
-            ViewManager.searchResults.push(song);
-            var artwork = ApiManager.getArtwork(song.artist, song.album);
-            song.name = song.name.slice(3);
-
-            if (song.album != currentAlbum) {
-                currentAlbum = song.album;
-                searchResults.append(
-                    AlbumView.header(index, artwork, song.artist, song.album)
-                );
-            }
-            searchResults.append(
-                ListItem.inAlbum(index, song.name, song.artist, song.album, song.url, song.track, artwork)
-            );
-        });
+    back: () => {
+        var view = ViewManager.viewStack.pop();
+        $('.player').empty().append(view);
     },
 
     updatePlayerState: () => {
@@ -50,5 +34,48 @@ var ViewManager = {
                 $('.toast').remove();
             });
         }, 1000);
+    },
+
+    changeView: (id, album, artist) => {
+        var view;
+        switch(id) {
+            case 'artists':
+                view = View.artists();
+                break;
+            case 'albums':
+                view = View.albums();
+                break;
+            case 'album':
+                view = View.album(album, artist);
+                break;
+            case 'playlists':
+                view = View.playlists();
+                break;
+            default:
+                view = View.albumsByArtist(id);
+                break;
+        }
+        ViewManager.viewStack.push($('.player').children());
+        $('.view-container, .back-button, .nav-header-title').removeClass('slide-in-left');
+        $('.view-container, .back-button').addClass('slide-in-right');
+        $('.player').empty().append(view);
+    },
+
+    populateResults: () => {
+        var currentAlbum = '';
+        var view = '';
+        $.each(ViewManager.searchResults, function(index, song) {
+            if (currentAlbum !== song.album) {
+                var artwork = ApiManager.getArtwork(song.artist, song.album);
+
+                view = view.concat(AlbumView.header(index, artwork, song.artist, song.album));
+                currentAlbum = song.album;
+            }
+            var clickEvent = `AudioManager.playSong('${song.name}', '${song.artist}', '${song.url}', true)`;
+            view = view.concat(
+                SearchResult.element(clickEvent, song.name, '', song)
+            );
+        });
+        $('.view-container div').append(view);
     }
 }

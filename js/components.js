@@ -24,36 +24,70 @@ var Player = {
     },
 
     playlistModal: (name, artist, album, url, artwork) => {
-        if (localStorage.playlists) {
-            playlists = JSON.parse(localStorage.playlists);
-        }
+        PlaylistManager.getPlaylists();
         var view = `
             <div class="disabled"></div>
             <div class="playlist-selector">
                 ${Player.header('Choose a playlist')}
         `;
-        for (var i=0; i< playlists.length; i++) {
+        $.each(PlaylistManager.playlists, function(index, playlist) {
+            console.log(playlist);
             view = view.concat(`
-                ${ListItem.playlistSelection(playlists[i][0], name, artist, album, url, artwork)}
+                ${ListItem.playlistSelection(playlist.name, name, artist, album, url, artwork)}
             `);
-        }
+        })
         view = view.concat(`${Button.closePlaylistModal()}`)
         return view;
     }
 }
 
-var ListItem = {
-    artist: (name) => {
+var SearchResult = {
+    element: (clickEvent, text, artwork, song) => {
         return `
-            <div class="artist-item" onclick="ApiManager.search('${name}')">
-                ${name}
+            <div class="search-result">
+                <div class="result-info" onclick="${clickEvent}">
+                    ${artwork ? SearchResult.artwork(artwork) : ''}
+                    ${text ? SearchResult.text(text) : ''}
+                </div>
+                <div class="result-options">
+                    ${song ? SearchResult.options(song) : ''}
+                </div>
             </div>
         `;
     },
 
-    album: (name, imgSrc) => {
+    text: text => {
         return `
-            <div class="album-item" onclick="ApiManager.search('${name}')">
+            <p>${text}</p>
+        `;
+    },
+
+    artwork: url => {
+        return `
+            <img class="artwork" src="${url}">
+        `;
+    },
+
+    options: song => {
+        var artwork = ApiManager.getArtwork(song.artist, song.album);
+        return `
+            <div class="song-option-button add-to-queue" onclick="AudioManager.addToQueue(
+                '${song.name}', '${song.artist}', '${song.album}', ${song.track}, '${song.url}'
+            )">Queue</div>
+            <div class="song-option-button add" onclick="PlaylistManager.showSelector(
+                '${song.name}', '${song.artist}', '${song.album}', '${song.url}', '${artwork}'
+            )">
+                <img src="/SpotiFree/files/images/playlist_add.png">
+            </div>
+        `;
+    }
+}
+
+var ListItem = {
+    album: (name, artist) => {
+        var imgSrc = ApiManager.getArtwork(artist, name);
+        return `
+            <div class="album-item" onclick="ViewManager.changeView('album', '${name}', '${artist}')">
                 <img src="${imgSrc}">
                 <p>${name}</p>
             </div>
@@ -75,70 +109,6 @@ var ListItem = {
              onclick="PlaylistManager.addToPlaylist('${playlist}', '${name}',
               '${artist}', '${album}', '${url}', '${artwork}')">
                 ${playlist}
-            </div>
-        `;
-    },
-
-    song: function(id, name, artist, album, url, index, artwork) {
-        return `
-            <div class="search-result">
-                <img class="artwork" src="${artwork}">
-                <div id="${id}" value="${url}" name="${id}">
-                    <p>${name}</p> &bull; ${album}</p>
-                    <p class="track">${index}></p>
-                </div>
-                <div class="add" value="${url}"
-                 onclick="PlaylistManager.showSelector(
-                     '${name}', '${artist}', '${album}', '${url}', '${artwork}'
-                 )">
-                    <img src="SpotiFree/files/images/playlist_add.png">
-                </div>
-            </div>
-        `;
-    },
-
-    inAlbum: function(id, name, artist, album, url, index, artwork) {
-        return `
-            <div class="search-result in-album" style="cursor: pointer">
-                <div class="search-result-info" id="${id}" value="${url}"
-                 name="${id}" onclick="AudioManager.playSong('${name}', '${artist}', '${url}', true)">
-                    <!--<p class="track">${index}</p>-->
-                    <p class="track">${name}</p>
-
-                </div>
-                <div class="song-option-button add-to-queue" onclick="AudioManager.addToQueue(
-                    '${name}', '${artist}', '${album}', ${index}, '${url}'
-                )">Queue</div>
-                <div class="song-option-button add" onclick="PlaylistManager.showSelector(
-                     '${name}', '${artist}', '${album}', '${url}', '${artwork}'
-                 )">
-                    <img src="/SpotiFree/files/images/playlist_add.png">
-                </div>
-            </div>
-        `;
-    },
-
-    inPlaylistBrowser: () => {
-        return `
-            <div class="search-result" onclick="">
-
-            </div>
-        `;
-    },
-
-    inPlaylist: function(id, playlist, artwork, name, artist, album, url, index) {
-        return `
-            <div class="search-result" id=${id} value=${url} name=${id}
-             onclick="AudioManager.playSong('${name}', '${artist}', '${url}', true)">
-                <img class="artwork" src="${artwork}">
-                <div id="${id}" value="${url}" name="${id}">
-                    <p>${name}</p>
-                    <p>${artist} &bull; ${album}</p>
-                    <p class="track">${index}</p>
-                </div>
-                <div class="remove" name="${playlist}"
-                 onclick="PlaylistManager.removeFromPlaylist()">
-                </div>
             </div>
         `;
     },
@@ -172,7 +142,7 @@ var AlbumView = {
                     <img src="${artwork}">
                 </div>
                 <div class="album-img" id="album-${id}">
-                    <img src="${artwork}">
+                    <img class="artwork" src="${artwork}">
                     <div class="album-play" name="${album}" onclick="AudioManager.playAlbum('${album}')">
                         <img src="/SpotiFree/files/images/play_arrow.svg">
                     </div>
@@ -180,10 +150,102 @@ var AlbumView = {
                 <div class="album-info">
                     <h3>${album}</h3>
                     <h6>${artist}</h6>
-                <div class="shuffle" onclick="AudioManager.playAlbum('${album}', true)">
-                    <p>Shuffle Play</p>
+                    <div class="shuffle" onclick="AudioManager.playAlbum('${album}', true)">
+                        <p>Shuffle Play</p>
+                    </div>
                 </div>
             </div>
         `;
     }
+}
+
+var View = {
+    init: () => {
+        $('.player').empty().append(View.main());
+    },
+
+    main: () => {
+        return `
+            <div class="view-container slide-in-left">
+                <div class="view-section">
+                    ${Player.header('Library')}
+                    ${SearchResult.element("ViewManager.changeView('artists')", 'Artists')}
+                    ${SearchResult.element("ViewManager.changeView('albums')", 'Albums')}
+                    ${SearchResult.element("ViewManager.changeView('playlists')", 'Playlists')}
+                </div>
+            </div>
+        `;
+    },
+
+    artists: () => {
+        var view = ``;
+        $.each(AudioManager.artists, function(index, artist) {
+            var clickEvent = `ViewManager.changeView('${artist}')`;
+            view = view.concat(
+                SearchResult.element(clickEvent, artist)
+            );
+        });
+        return View.navContainer(view, 'Artists', 'Library');
+    },
+
+    albums: () => {
+        var view = ``;
+        $.each(AudioManager.albums, function(index, data) {
+            var clickEvent = `ApiManager.search(${data.album})`;
+            view = view.concat(
+                ListItem.album(data.name, data.artist)
+            );
+        });
+        return View.navContainer(view, 'Albums', 'Library', 'album-container');
+    },
+
+    playlists: () => {
+        var view = ``;
+        $.each(PlaylistManager.playlists, function(index, playlist) {
+            var clickEvent = `PlaylistManager.getPlaylist(${playlist.name, playlist.description})`;
+            view = view.concat(
+                SearchResult.element(clickEvent, playlist.name)
+            );
+        });
+        return View.navContainer(view, 'Playlists', 'Library');
+    },
+
+    albumsByArtist(artist) {
+        var view = ``;
+        $.each(AudioManager.albums, function(index, data) {
+            if (data.artist === artist) {
+                view = view.concat(
+                    ListItem.album(data.name, data.artist)
+                );
+            }
+        });
+        return View.navContainer(view, artist, 'Artists', 'album-container');
+    },
+
+    album: (album, artist) => {
+        ApiManager.search(album);
+        return View.navContainer('', '', artist, 'result-container');
+    },
+
+    navContainer: (contents, title, backText, id) => {
+        var view = `
+            <div class="nav-header">
+                <div class="blur-bg"></div>
+                <div class="back-button slide-in-left" onclick="ViewManager.back()">
+                    &lsaquo; ${backText}
+                </div>
+                <div class="nav-header-title">
+                    ${title}
+                </div>
+            </div>
+            <div class="view-container slide-in-left">
+                <div class="view-section" id="${id}">
+                    ${contents}
+                </div>
+            </div>
+        `;
+        return view;
+    }
+
+
 }

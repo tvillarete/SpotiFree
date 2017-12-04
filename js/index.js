@@ -1,13 +1,7 @@
-var playlists = [];
-var searchType;
-var currentVolume = 35;
-var viewIndex;
-
 function loadTasks() {
-    //getData({type: "album"}, $("#album-browser"));
     ApiManager.getArtistData();
     ApiManager.getAlbumData();
-    $("#album-browser, #artist-browser").hide();
+    View.init();
     $(".logo-background").delay(2000).fadeOut("fast");
     if (localStorage.volume) {
         var volume = parseInt(localStorage.volume);
@@ -85,51 +79,3 @@ function updateTrackTime(track){
 function updateResults(newResults) {
     results = newResults;
 }
-
-$(document).on("click", '.nav-button', function() {
-    searchType = null;
-    $(".search-results, .view").hide();
-    $(".nav-button, .playlist").removeClass("selected");
-    if (!$(this).hasClass("selected")) {
-        $(this).addClass("selected");
-    }
-    var id = $(this).attr("id");
-    var newViewIndex = $(this).attr("value");
-    var view = null;
-    var type = null;
-    switch (id) {
-        case "nav-artists":
-            view = $("#artist-browser");
-            type = "artist";
-            break;
-        case "nav-albums":
-            view = $("#album-browser");
-            type = "album";
-            break;
-        case "nav-songs":
-            view = $("#song-browser");
-            type = "song";
-            break;
-        case "create-playlist":
-            view = $("#playlist-creator")
-            break;
-        case "nav-playlists":
-            view = $("#playlist-browser");
-            PlaylistManager.populatePlaylists();
-            break;
-    }
-
-    if (viewIndex > newViewIndex) {
-        view.removeClass("slide-in-left slide-in-up").addClass("slide-in-right");
-    } else if (viewIndex < newViewIndex) {
-        view.removeClass("slide-in-right slide-in-up").addClass("slide-in-left");
-    } else {
-        view.removeClass("slide-in-right slide-in-left");
-        view.addClass("slide-in-up");
-    }
-    prevView = view;
-    $(document).ready(function() {
-        view.show();
-    })
-    viewIndex = newViewIndex;
-});

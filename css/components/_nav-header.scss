@@ -1,0 +1,38 @@
+.nav-header {
+    position: relative;
+    display: flex;
+    height: 5em;
+    padding: 0 1em;
+    overflow: hidden;
+    box-shadow: 0 0 10px black;
+
+    .blur-bg {
+        z-index: -1;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background-size: cover;
+        background: url('files/bg.jpg');
+        animation: none;
+        filter: blur(20px) brightness(30%);
+    }
+
+    .back-button {
+        width: 10em;
+        font-size: 2em;
+        line-height: 2.5em;
+        cursor: pointer;
+    }
+
+    .nav-header-title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        max-width: 10em;
+        line-height: 2.5em;
+        font-size: 2em;
+        text-align: center;
+        margin: auto;
+        animation: fade 0.25s;
+    }
+}

@@ -2,6 +2,8 @@ var AudioManager = {
     playlist: [],
     inQueue: 0,
     index: 0,
+    artists: [],
+    albums: [],
     volume: localStorage.volume ? parseInt(localStorage.volume) : 35,
 
     playSong: (name, artist, url, isNewPlaylist = false) => {
@@ -28,7 +30,7 @@ var AudioManager = {
 
     setupAudio: (name, artist, url) => {
         $('.audio').remove();
-        $('.search-result').removeClass('playling');
+        $('.search-result').removeClass('playing');
         var newIndex;
 
         $('.search-result-info').each(function() {

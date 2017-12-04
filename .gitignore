@@ -6,6 +6,7 @@
 *.swo
 css/.sass-cache/
 keys.php
+*.php
 
 # Compiled source #
 # ####################

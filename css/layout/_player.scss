@@ -1,10 +1,15 @@
 .player {
     position: absolute;
-    top: 5em;
+    top: 0;
+    bottom: 5.5em;
     left: 0;
     right: 0;
     display: flex;
+    justify-content: flex-start;
     flex-direction: column;
     overflow: hidden;
 
+    @media screen and (max-width: 750px) {
+        bottom: 11em;
+    }
 }
