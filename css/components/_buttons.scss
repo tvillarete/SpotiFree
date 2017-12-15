@@ -1,44 +1,13 @@
-.nav-button {
-    height: 100%;
-    width: 100%;
-    max-width: 8em;
-    line-height: 2.5em;
+.button {
+    font-size: 1.8em;
+    background: dodgerblue;
+    height: 2em;
+    line-height: 2em;
+    width: 7em;
     text-align: center;
-    font-size: 2em;
-    transition: all 0.15s ease-in-out;
-    cursor: pointer;
-    touch-action: manipulation;
-
-    &:hover {
-        background: rgba(10,10,10, .4);
-    }
-
-    &.selected {
-        border-bottom: 0.1em solid dodgerblue;
-        box-sizing: border-box;
-    }
-}
-
-.action-button {
-    height: 3em;
-    font-size: 1em;
-    line-height: 0.5em;
-    max-width: 12em;
     border-radius: 4px;
-    background-color: dodgerblue;
+    margin: 1em auto;
     cursor: pointer;
-    margin: 2em;
-    text-align: center;
-    touch-action: manipulation;
-
-    &:active {
-        filter: brightness(80%);
-    }
-
-    &:hover {
-        background: dodgerblue;
-    }
-
 }
 
 .shuffle {
@@ -54,25 +23,6 @@
     touch-action: manipulation;
 }
 
-.artist-item {
-    width: 100%;
-    margin-left: 2em;
-    padding-left: 1em;
-    height: 2.5em;
-    line-height: 2.5em;
-    border-bottom: $border-divider;
-    cursor: pointer;
-    touch-action: manipulation;
-
-    p {
-        margin: 0;
-    }
-
-    &:hover {
-        background: rgb(40,40,40);
-    }
-}
-
 .album-item {
     height: 270px;
     margin: 0 1em 1em 1em;
@@ -86,20 +36,7 @@
     img{
         max-height: 200px;
         box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
-    }
-}
-
-.playlist-item {
-    font-size: 1.5em;
-    height: 2.5em;
-    line-height: 2.5em;
-    padding-left: 2em;
-    border-bottom: $border-divider;
-    cursor: pointer;
-    touch-action: manipulation;
-
-    &:hover {
-        background: rgb(40,40,40);
+        pointer-events: none;
     }
 }
 
@@ -112,6 +49,7 @@
     overflow:hidden;
     padding: 0;
     animation: fade 0.25s;
+    cursor: pointer;
 
     &:hover {
         background: rgb(40,40,40);
@@ -164,7 +102,9 @@
 }
 
 .playing {
-    color: dodgerblue;
+    .result-text {
+        color: $accent-color;
+    }
 }
 
 .song-option-button {
@@ -175,4 +115,12 @@
     &:hover {
         background: rgb(70,70,70);
     }
+}
+
+.theme-changer {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    z-index: 2;
+    cursor: pointer;
 }

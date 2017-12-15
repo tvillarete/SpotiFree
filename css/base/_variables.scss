@@ -1,10 +1,10 @@
-$font-stack: roboto;
+$font-stack: 'San Francisco Display';
 
 $darkest: rgb(20,20,20);
 $darker: rgb(70,70,70);
 
 $logo-background-color: white;
-$accent-color: dodgerblue;
+$accent-color: #65c5ff;
 $primary-color: white;
 
 $border-divider: 1px solid rgba(255,255,255,.12);
@@ -13,3 +13,4 @@ $border-radius: 4px;
 $box-shadow: rgba(0, 0, 0, 0.3) 0 10px 16px 0;
 
 $max-width: 1000px;
+$mobile-width: 1000px;

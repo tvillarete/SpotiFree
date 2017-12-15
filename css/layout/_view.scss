@@ -3,21 +3,29 @@
 
     .header {
         font-size: 4em;
+        font-weight: bold;
     }
 
     .subheader {
-        font-size: 1.5em;
-        flex: 1 0 100%;
-        padding-left: 1em;
-        margin: 0 0 1em 1em;
+        font-size: 2em;
+        font-weight: bold;
+        margin: 1em 0 0.5em 0;
     }
 }
 
 .view-container {
     flex: 1;
-    padding: 3em 1em;
+    padding: 1em 0 6em 1em;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+
+    &.shifted-down {
+        margin-top: 5em;
+    }
+
+    &#recently-played-container {
+        padding: 1em 0 6em 0;
+    }
 
     div.view-section {
         max-width: 70em;

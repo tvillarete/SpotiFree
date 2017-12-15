@@ -5,31 +5,19 @@ var PlaylistManager = {
         if (localStorage.playlists) {
             PlaylistManager.playlists = JSON.parse(localStorage.playlists);
         }
-        $("#playlist-browser").empty().append(`
-            ${Player.header("Playlists")}
-            <div class="nav-button action-button" id="create-playlist">
-                <h2>Create Playlist</h2>
-            </div>
-        `);
-        $.each(PlaylistManager.playlists, function(index, playlist) {
-            $('#playlist-browser').append(
-                ListItem.playlist(playlist.name, playlist.description)
-            );
-        });
+        $('.player').empty().append(View.playlists());
     },
 
-    getPlaylist: (name, description) => {
+    getPlaylist: (name) => {
         $('.view').hide();
         $('.search-results').empty().show();
-        var view = `
-            ${Player.header(name)}
-            ${Player.subheader(description)}
-            ${Button.shuffle()}
-        `;
+        var view = ``;
+        var desc = 'No description';
         ViewManager.searchResults = [];
 
         $.each(PlaylistManager.playlists, function(index, playlist) {
             if (playlist.name === name) {
+                desc = playlist.description;
                 $.each(playlist.songs, function(key, song) {
                     var artwork = ApiManager.getArtwork(song.artist, song.album);
                     var clickEvent = `AudioManager.playSong('${song.name}', '${song.artist}', '${song.url}', true)`;
@@ -41,6 +29,7 @@ var PlaylistManager = {
                 });
             }
         });
+        ViewManager.changeView('playlist', '', '', name, desc);
     },
 
     addToPlaylist: (playlistName, name, artist, album, url, artwork) => {
@@ -79,7 +68,7 @@ var PlaylistManager = {
     },
 
     createPlaylist: () => {
-        var name = $('#playlist-name').val();
+        var name = $('#playlist-title').val();
         var description = $('#playlist-desc').val();
         var playlist = {
             name: name,
@@ -90,6 +79,8 @@ var PlaylistManager = {
         if (PlaylistManager.validate(name, description)) {
             PlaylistManager.playlists.push(playlist);
             PlaylistManager.updatePlaylists();
+            ViewManager.back();
+            PlaylistManager.populatePlaylists();
         } else {
             alert('Please fill out all the forms!');
         }

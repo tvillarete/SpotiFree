@@ -1,0 +1,124 @@
+.apple-music {
+    $accent-color: rgb(255, 45, 85);
+    $focus-color: rgb(255, 59, 48);
+    $focus-color-alpha: rgba(255, 45, 85, 0.6);
+    $black: #636363;
+
+    background-color: white;
+    color: black;
+
+    .blur-bg, .blur {
+        background: white !important;
+    }
+
+    .logo {
+        div {
+            background: $accent-color;
+            color: white;
+        }
+    }
+
+    .nav-header {
+        background-color: white;
+        box-shadow: none;
+        color: black;
+        animation: none;
+
+        .blur-bg {
+            display: none;
+        }
+
+        .back-button {
+            color: $accent-color;
+        }
+    }
+
+    #library-search input, input [type=text] {
+        background: rgb(240,240,240);
+    }
+
+    .search-result {
+        color: $accent-color;
+        border-bottom: 1px solid rgba(0,0,0,0.12);
+
+        &:hover {
+            background: rgb(235, 235, 235);
+        }
+
+        &:active {
+            background: $focus-color;
+            color: white;
+        }
+
+        &.dark-result {
+            color: black;
+
+            &:hover {
+                background: rgb(235,235,235);
+                color: black;
+            }
+        }
+
+        .song-option-button {
+            img {
+                filter: invert(0.5);
+            }
+
+            &:hover {
+                background: rgba(0,0,0, 0.12);
+            }
+        }
+    }
+
+    .album-item {
+        img {
+            box-shadow: none;
+            border: 1px solid rgba(0,0,0,0.12);
+            border-radius: 4px;
+        }
+    }
+
+    .album-head {
+        h6 {
+            color: $accent-color;
+        }
+
+        .album-head-bg {
+            display: none;
+        }
+
+        .artwork {
+            box-shadow: none !important;
+            border: 1px solid rgba(0,0,0,0.12);
+            border-radius: 4px;
+        }
+    }
+
+    .shuffle, .action-button {
+        background: white;
+        color: $accent-color;
+        border: 1px solid $accent-color;
+        border-radius: 4px;
+
+        &:active {
+            background: $focus-color;
+            color: white;
+        }
+    }
+
+    .disabled {
+        background: white;
+    }
+
+    .playlist-selector {
+        background: white;
+    }
+/*
+    .controls {
+        background: rgba(230, 230, 230, 0.8);
+        color: $black;
+
+
+    }
+    */
+}

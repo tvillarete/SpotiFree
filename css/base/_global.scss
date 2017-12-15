@@ -1,5 +1,26 @@
+@font-face {
+    font-family: 'San Francisco Display';
+    src: url('fonts/SanFranciscoDisplay-Bold.eot');
+    src: url('fonts/SanFranciscoDisplay-Bold.eot?#iefix') format('embedded-opentype'),
+        url('fonts/SanFranciscoDisplay-Bold.woff') format('woff'),
+        url('fonts/SanFranciscoDisplay-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'San Francisco Display';
+    src: url('fonts/SanFranciscoDisplay-Regular.eot');
+    src: url('fonts/SanFranciscoDisplay-Regular.eot?#iefix') format('embedded-opentype'),
+        url('fonts/SanFranciscoDisplay-Regular.woff') format('woff'),
+        url('fonts/SanFranciscoDisplay-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
 html {
     touch-action: manipulation;
+    font-family: 'San Francisco Display';
 }
 
 body {
@@ -26,4 +47,8 @@ body {
     transition: background 1s ease-in-out;
     background: url(files/bg_blur.jpg);
     animation: fade .5s;
+}
+
+.hidden {
+    display: none !important;
 }

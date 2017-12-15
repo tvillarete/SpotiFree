@@ -1,24 +1,45 @@
 var ViewManager = {
     searchResults: [],
     viewStack: [],
+    recentlyPlayed: (localStorage.recentlyPlayed ? JSON.parse(localStorage.recentlyPlayed) : []),
 
     back: () => {
         var view = ViewManager.viewStack.pop();
         $('.player').empty().append(view);
+        if (ViewManager.viewStack.length == 0) {
+            ViewManager.updateRecentlyPlayed();
+        }
+    },
+
+    getId: (artist, name) => {
+        artist = artist.replace(/\s+/g, '-').toLowerCase();
+        name = name.replace(/\s+/g, '-').toLowerCase();
+        return `${artist}-${name}`;
     },
 
     updatePlayerState: () => {
         var song = AudioManager.getSongAtIndex();
         var artwork = ApiManager.getArtwork(song.artist, song.album);
-        $('.cover-bg').css('background', `url('${artwork}') no-repeat`);
-        $('.cover-bg').css('background-size', `cover`);
-        $('.playback-artwork').replaceWith(`
-            <div class="playback-artwork">
-                <img src="${artwork}">
-            </div>
-        `);
-        $('.playback-title').html(`<h1>${song.name}</h1>`);
-        $('.playback-artist').html(`${song.artist}`);
+        var id = ViewManager.getId(song.artist, song.name);
+
+        $('.blur').css('background', `url('${artwork}') no-repeat`);
+        $('.blur').css('background-size', `cover`);
+        $('#artwork-fullscreen, .artwork-container').html(`<img src="${artwork}">`);
+
+        $('.song-title').text(song.name);
+        $('.song-album').html(`${song.artist} &mdash; ${song.album}`);
+
+        $('.search-result').removeClass('playing');
+        $('.controls').show();
+        $('.player').addClass('show-controls');
+    },
+
+    updatePlayerTime: track => {
+
+    },
+
+    showFullscreenControls: () => {
+        $('.controls').toggleClass('fullscreen');
     },
 
     displayToast: (icon, text) => {
@@ -36,8 +57,9 @@ var ViewManager = {
         }, 1000);
     },
 
-    changeView: (id, album, artist) => {
+    changeView: (id, option, artist, playlist, desc) => {
         var view;
+
         switch(id) {
             case 'artists':
                 view = View.artists();
@@ -46,15 +68,25 @@ var ViewManager = {
                 view = View.albums();
                 break;
             case 'album':
-                view = View.album(album, artist);
+                view = View.album(option, artist);
                 break;
             case 'playlists':
                 view = View.playlists();
+                break;
+            case 'playlist-creator':
+                view = View.playlistCreator();
+                break;
+            case 'playlist':
+                view = View.playlist(playlist, desc);
+                break;
+            case 'search':
+                view = View.search(option);
                 break;
             default:
                 view = View.albumsByArtist(id);
                 break;
         }
+        $('.nav-header').removeClass('reveal-nav');
         ViewManager.viewStack.push($('.player').children());
         $('.view-container, .back-button, .nav-header-title').removeClass('slide-in-left');
         $('.view-container, .back-button').addClass('slide-in-right');
@@ -64,6 +96,8 @@ var ViewManager = {
     populateResults: () => {
         var currentAlbum = '';
         var view = '';
+        var currentSong = AudioManager.getSongAtIndex();
+
         $.each(ViewManager.searchResults, function(index, song) {
             if (currentAlbum !== song.album) {
                 var artwork = ApiManager.getArtwork(song.artist, song.album);
@@ -72,10 +106,37 @@ var ViewManager = {
                 currentAlbum = song.album;
             }
             var clickEvent = `AudioManager.playSong('${song.name}', '${song.artist}', '${song.url}', true)`;
+            var options = {
+                clickEvent: clickEvent,
+                classes: 'dark-result',
+                text: song.name,
+                song: song,
+                id: ViewManager.getId(song.artist, song.name),
+                isPlaying: (currentSong && song.url == currentSong.url) ? true : false,
+            }
             view = view.concat(
-                SearchResult.element(clickEvent, song.name, '', song)
+                SearchResult.element(options)
             );
         });
         $('.view-container div').append(view);
+    },
+
+    addToRecentlyPlayed: song => {
+        var newArray = [];
+        $.each(ViewManager.recentlyPlayed, function(index, value) {
+            if (song.url !== value.url) {
+                newArray.push(value);
+            }
+        });
+        newArray.unshift(song);
+        if (newArray.length > 6) {
+            newArray.pop();
+        }
+        ViewManager.recentlyPlayed = newArray;
+        localStorage.recentlyPlayed = JSON.stringify(ViewManager.recentlyPlayed);
+    },
+
+    updateRecentlyPlayed: () => {
+        $('#recently-played-container').empty().append(View.recentlyPlayed());
     }
 }

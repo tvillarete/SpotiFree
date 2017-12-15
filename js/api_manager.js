@@ -1,5 +1,6 @@
 var ApiManager = {
     search: (query = null) => {
+        $('.searchbar').blur();
         if (query)
             $('.searchbox').val(query);
 

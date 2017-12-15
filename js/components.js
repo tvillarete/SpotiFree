@@ -1,4 +1,17 @@
 var Player = {
+    init: () => {
+        ApiManager.getArtistData();
+        ApiManager.getAlbumData();
+        View.init();
+        Controls.init();
+        $(".logo-background").delay(2000).fadeOut("fast");
+        if (localStorage.volume) {
+            var volume = parseInt(localStorage.volume);
+            $('#vol-control').val(volume);
+        }
+        document.onkeydown = AudioManager.checkKey;
+    },
+
     header: function(name) {
         return `
             <div class="header">
@@ -23,6 +36,26 @@ var Player = {
         `;
     },
 
+    searchbar: () => {
+        return `
+            <form id="library-search" action="#" onsubmit="ViewManager.changeView('search', this)">
+                <input autocomplete="off" autocorrect="off" autocapitalize="off"
+                 class="searchbar" type=text" placeholder="Search">
+            </form>
+        `;
+    },
+
+    progressBar: () => {
+        return `
+            <div class="section progress-bar">
+                <div class="progress">
+                    <div class="progress-bar-handle"></div>
+                </div>
+            </div>
+        `;
+
+    },
+
     playlistModal: (name, artist, album, url, artwork) => {
         PlaylistManager.getPlaylists();
         var view = `
@@ -31,9 +64,8 @@ var Player = {
                 ${Player.header('Choose a playlist')}
         `;
         $.each(PlaylistManager.playlists, function(index, playlist) {
-            console.log(playlist);
             view = view.concat(`
-                ${ListItem.playlistSelection(playlist.name, name, artist, album, url, artwork)}
+                ${Button.playlistSelection(playlist.name, name, artist, album, url, artwork)}
             `);
         })
         view = view.concat(`${Button.closePlaylistModal()}`)
@@ -42,15 +74,16 @@ var Player = {
 }
 
 var SearchResult = {
-    element: (clickEvent, text, artwork, song) => {
+    element: (options, clickEvent, text) => {
+        clickEvent = options.clickEvent ? options.clickEvent : clickEvent;
         return `
-            <div class="search-result">
+            <div class="search-result ${options.classes} ${options.isPlaying ? options.isPlaying : ''}" id="${options.id}">
                 <div class="result-info" onclick="${clickEvent}">
-                    ${artwork ? SearchResult.artwork(artwork) : ''}
-                    ${text ? SearchResult.text(text) : ''}
+                    ${SearchResult.artwork(options.artwork)}
+                    ${SearchResult.text(options.text ? options.text : text)}
                 </div>
                 <div class="result-options">
-                    ${song ? SearchResult.options(song) : ''}
+                    ${SearchResult.options(options.song)}
                 </div>
             </div>
         `;
@@ -63,12 +96,13 @@ var SearchResult = {
     },
 
     artwork: url => {
-        return `
-            <img class="artwork" src="${url}">
-        `;
+        return url ? `<img class="artwork" src="${url}">` : '';
     },
 
     options: song => {
+        if (!song) {
+            return '';
+        }
         var artwork = ApiManager.getArtwork(song.artist, song.album);
         return `
             <div class="song-option-button add-to-queue" onclick="AudioManager.addToQueue(
@@ -83,7 +117,32 @@ var SearchResult = {
     }
 }
 
-var ListItem = {
+var Button = {
+    shuffle: (type=null, name=null) => {
+        return `
+            <div class="shuffle" value=${type} onclick="${type == 'playlist' ?
+             'shufflePlaylist('+name+')' : ''}">
+                <p>Shuffle Play</p>
+            </div>
+        `;
+    },
+
+    actionButton: (options) => {
+        return `
+            <div class="button action-button" onclick="${options.clickEvent}">
+                ${options.text}
+            </div>
+        `;
+    },
+
+    playbackButton: (className, clickEvent, imgSrc) => {
+        return `
+            <div class="playback-button ${className}" onclick="${clickEvent}">
+                <img src="files/images/${imgSrc}">
+            </div>
+        `;
+    },
+
     album: (name, artist) => {
         var imgSrc = ApiManager.getArtwork(artist, name);
         return `
@@ -94,32 +153,14 @@ var ListItem = {
         `;
     },
 
-    playlist: function(name, description) {
+    playlistSelection: (playlist, name, artist, album, url, artwork) => {
         return `
-            <div class="playlist playlist-item"
-             onclick="PlaylistManager.showPlaylist('${name}', '${description}')">
-                ${name}
-            </div>
-        `;
-    },
-
-    playlistSelection: function(playlist, name, artist, album, url, artwork) {
-        return `
-            <div class="playlist playlist-selector-item"
+            <div class="search-result"
              onclick="PlaylistManager.addToPlaylist('${playlist}', '${name}',
               '${artist}', '${album}', '${url}', '${artwork}')">
-                ${playlist}
-            </div>
-        `;
-    },
-};
-
-var Button = {
-    shuffle: (type=null, name=null) => {
-        return `
-            <div class="shuffle" value=${type} onclick="${type == 'playlist' ?
-             'shufflePlaylist('+name+')' : ''}">
-                <p>Shuffle Play</p>
+                <div class="result-info">
+                    <p>${playlist}</p>
+                </div>
             </div>
         `;
     },
@@ -159,93 +200,118 @@ var AlbumView = {
     }
 }
 
-var View = {
+var Controls = {
     init: () => {
-        $('.player').empty().append(View.main());
+        $('body').append(Controls.element());
+        Controls.bindEvents();
     },
 
-    main: () => {
-        return `
-            <div class="view-container slide-in-left">
-                <div class="view-section">
-                    ${Player.header('Library')}
-                    ${SearchResult.element("ViewManager.changeView('artists')", 'Artists')}
-                    ${SearchResult.element("ViewManager.changeView('albums')", 'Albums')}
-                    ${SearchResult.element("ViewManager.changeView('playlists')", 'Playlists')}
-                </div>
-            </div>
-        `;
+    toggleFullscreen: () => {
+        $('.controls').toggleClass('fullscreen');
+        $('.disabled').fadeToggle();
     },
 
-    artists: () => {
-        var view = ``;
-        $.each(AudioManager.artists, function(index, artist) {
-            var clickEvent = `ViewManager.changeView('${artist}')`;
-            view = view.concat(
-                SearchResult.element(clickEvent, artist)
-            );
-        });
-        return View.navContainer(view, 'Artists', 'Library');
-    },
-
-    albums: () => {
-        var view = ``;
-        $.each(AudioManager.albums, function(index, data) {
-            var clickEvent = `ApiManager.search(${data.album})`;
-            view = view.concat(
-                ListItem.album(data.name, data.artist)
-            );
-        });
-        return View.navContainer(view, 'Albums', 'Library', 'album-container');
-    },
-
-    playlists: () => {
-        var view = ``;
-        $.each(PlaylistManager.playlists, function(index, playlist) {
-            var clickEvent = `PlaylistManager.getPlaylist(${playlist.name, playlist.description})`;
-            view = view.concat(
-                SearchResult.element(clickEvent, playlist.name)
-            );
-        });
-        return View.navContainer(view, 'Playlists', 'Library');
-    },
-
-    albumsByArtist(artist) {
-        var view = ``;
-        $.each(AudioManager.albums, function(index, data) {
-            if (data.artist === artist) {
-                view = view.concat(
-                    ListItem.album(data.name, data.artist)
-                );
+    bindEvents: () => {
+        var timeDrag;
+        $(".progress-bar, .progress-bar > div, .progress-bar-handle").bind('mousedown touchstart', function(e){
+            timeDrag = true;
+            updatebar(e.pageX);
+            $(".progress-bar").addClass("scrubbing");
+        }).bind('mouseup touchend', function(e){
+            if(timeDrag) {
+                timeDrag = false;
+                updatebar(e.pageX);
+                $(".progress-bar").removeClass("scrubbing");
             }
-        });
-        return View.navContainer(view, artist, 'Artists', 'album-container');
+        }).bind('mousemove touchmove', function(e) {
+            if(timeDrag) {
+                updatebar(e.pageX);
+            }
+        })
     },
 
-    album: (album, artist) => {
-        ApiManager.search(album);
-        return View.navContainer('', '', artist, 'result-container');
-    },
-
-    navContainer: (contents, title, backText, id) => {
-        var view = `
-            <div class="nav-header">
-                <div class="blur-bg"></div>
-                <div class="back-button slide-in-left" onclick="ViewManager.back()">
-                    &lsaquo; ${backText}
-                </div>
-                <div class="nav-header-title">
-                    ${title}
+    element: () => {
+        return `
+            <div class="controls">
+                ${Controls.mini()}
+                <div class="controls-fullscreen-container">
+                    ${Controls.fullArtwork()}
+                    ${Controls.progressBar()}
+                    ${Controls.fullscreenInfo()}
+                    ${Controls.playbackControls()}
+                    ${Controls.volume()}
                 </div>
             </div>
-            <div class="view-container slide-in-left">
-                <div class="view-section" id="${id}">
-                    ${contents}
+            <div class="disabled controls-disabled" style="display: none;"
+             onclick="Controls.toggleFullscreen()"></div>
+        `;
+    },
+
+    mini: () => {
+        return `
+            <div id="mini-controls">
+                <div id="song-info-container" onclick="Controls.toggleFullscreen()">
+                    <div class="artwork-container">
+                        <img src="/SpotiFree/files/music/Coldplay/All I Can Think About Is You/Artwork.png">
+                    </div>
+                    <div class="song-title">Kaleidoscope</div>
                 </div>
+                <div id="playback-container">
+                    ${Button.playbackButton('play', 'AudioManager.resume()', 'play_arrow.svg')}
+                    ${Button.playbackButton('pause hidden', 'AudioManager.pause()', 'pause.svg')}
+                    ${Button.playbackButton('', 'AudioManager.skip()', 'skip_next.svg')}
+                </div>
+                <div class="playback-button" id="arrow-down" onclick="Controls.toggleFullscreen()">&times;</div>
             </div>
         `;
-        return view;
+    },
+
+    fullArtwork: () => {
+        return `
+            <div id="artwork-fullscreen">
+                <img src="/SpotiFree/files/music/Coldplay/All I Can Think About Is You/Artwork.png">
+            </div>
+        `;
+    },
+
+    progressBar: () => {
+        return `
+            <div class="progress-bar">
+                <div class="progress">
+                    <div class="progress-bar-handle"></div>
+                </div>
+            </div>
+            <div class="track-time-container">
+                <div id="current-time">0:00</div>
+                <div id="max-time">3:15</div>
+            </div>
+        `;
+    },
+
+    fullscreenInfo: () => {
+        return `
+            <div class="song-info-container">
+                <div class="song-title">Kaleidoscope</div>
+                <div class="song-album">A Head Full of Dreams</div>
+            </div>
+        `;
+    },
+
+    playbackControls: () => {
+        return `
+            <div class="playback-fullscreen-container">
+                ${Button.playbackButton('', 'AudioManager.previous()', 'skip_previous.svg')}
+                ${Button.playbackButton('play', 'AudioManager.resume()', 'play_arrow.svg')}
+                ${Button.playbackButton('pause hidden', 'AudioManager.pause()', 'pause.svg', true)}
+                ${Button.playbackButton('', 'AudioManager.skip()', 'skip_next.svg')}
+            </div>
+        `;
+    },
+
+    volume: () => {
+        return `
+            <input class="volume-bar" id="vol-control" type="range" min="0" value="35" max="100" step="1"
+             oninput="AudioManager.setVolume(this.value)" onchange="AudioManager.setVolume(this.value)">
+        `;
     }
-
-
 }

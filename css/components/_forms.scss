@@ -16,3 +16,39 @@ form#search {
         padding: 0 0.5em;
     }
 }
+
+form#library-search {
+    display: flex;
+    margin-top: 1em;
+
+    input {
+        -webkit-appearance: none;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.6em;
+        height: 2em;
+        padding-left: 0.5em;
+        width: 95%;
+        max-width: 27em;
+        margin: auto;
+        outline: none;
+    }
+}
+
+form#playlist-creator-form {
+    display: flex;
+    flex-direction: column;
+
+    input {
+        -webkit-appearance: none;
+        border: none;
+        outline: none;
+        height: 1.8em;
+        font-size: 1.8em;
+        width: 100%;
+        max-width: 25em;
+        margin: 1em auto;
+        border-radius: 4px;
+        padding-left: 0.5em;
+    }
+}
