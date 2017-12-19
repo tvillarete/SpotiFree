@@ -55,6 +55,12 @@
         background: rgb(40,40,40);
     }
 
+    &.song-playing {
+        p {
+            color: dodgerblue;
+        }
+    }
+
     .result-info {
         display: flex;
         flex: 1;
@@ -63,29 +69,33 @@
 
     .result-options {
         display: flex;
+        min-width: 0.75em;
+        color: #BFBFBF;
+
+        .nav-arrow {
+            font-size: 3em;
+            width: 0.75em;
+        }
     }
 
     p {
-        text-align: left;
-        line-height: 1em;
-        margin-top: .2em;
-        height: 1em;
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        font-size: 2em;
+        margin: 0;
+    }
 
-        &:nth-child(1) {
-            margin: auto;
-            height: 100%;
-            font-size: 1.8em;
-            line-height: 2.1em;
-        }
+    .result-text-container {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.5em;
+        padding: 0.5em 0 0 1em;
 
-        &:nth-child(2) {
-            margin: auto;
-            height: 60%;
-            font-size: .8em;
-            line-height: 1.6em;
+        p {
+            font-size: 1.1em;
+
+            &:last-child {
+                font-size: 0.9em;
+                color: gray;
+            }
         }
     }
 
@@ -117,13 +127,18 @@
         width: 1.5em;
         margin-top: 1.25em;
         filter: invert(1);
+        pointer-events: none;
     }
 }
 
-.theme-changer {
+#settings-button {
     position: absolute;
-    top: 1em;
+    font-size: 1.5em;
+    top: 1.7em;
     right: 1em;
-    z-index: 2;
     cursor: pointer;
+
+    &:active {
+        filter: opacity(0.5);
+    }
 }

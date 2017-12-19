@@ -43,8 +43,12 @@
         }
     }
 
-    #library-search input, input [type=text] {
+    #library-search input, input [type=text], form input {
         background: rgb(240,240,240);
+    }
+
+    #settings-button {
+        color: $accent-color;
     }
 
     .search-result {
@@ -55,9 +59,23 @@
             background: rgba(0, 0, 0, 0.05);
         }
 
+        &.song-playing {
+            p {
+                color: $accent-color !important;
+            }
+        }
+
         &:active {
             background: $focus-color;
             color: white;
+
+            .song-option-button img {
+                filter: invert(1);
+            }
+
+            p {
+                color: white !important;
+            }
         }
 
         &.dark-result {
@@ -69,13 +87,19 @@
             }
         }
 
+        .result-text-container {
+            p {
+                color: black;
+
+                &:last-child {
+                    color: gray;
+                }
+            }
+        }
+
         .song-option-button {
             img {
                 filter: invert(0.5);
-            }
-
-            &:hover {
-                background: rgba(0,0,0, 0.12);
             }
         }
     }
@@ -118,7 +142,7 @@
 
     .toast {
         color: rgb(134, 133, 133);
-        background: rgba(241, 241, 241, 0.76);
+        background: rgba(241, 241, 241, 1);
         box-shadow: 0 0 50px #9a9a9a;
 
         img {
@@ -162,10 +186,14 @@
 
         #mini-controls {
             color: #424242;
+
+            .playback-button {
+                filter: invert(0.7);
+            }
         }
 
         .playback-button {
-            filter: invert(0.7);
+            filter: invert(1);
         }
 
         .progress-bar {

@@ -12,6 +12,7 @@ var Player = {
             $('#vol-control').val(volume);
         }
         document.onkeydown = AudioManager.checkKey;
+        document.addEventListener('touchstart', function(){}, true);
     },
 
     header: function(name) {
@@ -75,16 +76,19 @@ var Player = {
 }
 
 var SearchResult = {
-    element: (options, clickEvent, text) => {
+    element: (options, clickEvent, text, showArrow) => {
         clickEvent = options.clickEvent ? options.clickEvent : clickEvent;
+        var arrow = '<p class="nav-arrow">&rsaquo;</p>';
         return `
-            <div class="search-result ${options.classes} ${options.isPlaying ? options.isPlaying : ''}" id="${options.id}">
+            <div class="search-result ${options.classes} ${options.isPlaying ? 'song-playing' : ''}" id="${options.id}">
                 <div class="result-info" onclick="${clickEvent}">
                     ${SearchResult.artwork(options.artwork)}
-                    ${SearchResult.text(options.text ? options.text : text)}
+                    ${options.subtext ? SearchResult.textSubtext(options.text, options.subtext) :
+                     SearchResult.text(options.text ? options.text : text)}
                 </div>
                 <div class="result-options">
                     ${SearchResult.options(options.song)}
+                    ${options.arrow || showArrow ? arrow : ''}
                 </div>
             </div>
         `;
@@ -93,6 +97,15 @@ var SearchResult = {
     text: text => {
         return `
             <p>${text}</p>
+        `;
+    },
+
+    textSubtext: (text, subtext) => {
+        return `
+            <div class="result-text-container">
+                ${SearchResult.text(text)}
+                ${SearchResult.text(subtext)}
+            </div>
         `;
     },
 
@@ -251,7 +264,7 @@ var Controls = {
     mini: () => {
         return `
             <div id="mini-controls">
-                <div id="song-info-container" onclick="Controls.toggleFullscreen()">
+                <div id="song-info-container" onclick="ViewManager.toggleControlsDisabled(); Controls.toggleFullscreen()">
                     <div class="artwork-container">
                         <img src="/SpotiFree/files/images/logo.png">
                     </div>

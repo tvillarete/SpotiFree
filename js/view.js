@@ -7,15 +7,15 @@ var View = {
     main: () => {
         return `
             <div class="view-container slide-in-left">
-                <div class="theme-changer" onclick="ThemeManager.toggleTheme()">
-                    Theme
-                </div>
                 <div class="view-section">
                     ${Player.header('Library')}
+                    <div id="settings-button" onclick="ViewManager.changeView('settings'), 'Settings'">
+                        Settings
+                    </div>
                     ${Player.searchbar()}
-                    ${SearchResult.element("", "ViewManager.changeView('artists')", 'Artists')}
-                    ${SearchResult.element("", "ViewManager.changeView('albums')", 'Albums')}
-                    ${SearchResult.element("", "ViewManager.changeView('playlists')", 'Playlists')}
+                    ${SearchResult.element("", "ViewManager.changeView('artists')", 'Artists', true)}
+                    ${SearchResult.element("", "ViewManager.changeView('albums')", 'Albums', true)}
+                    ${SearchResult.element("", "ViewManager.changeView('playlists')", 'Playlists', true)}
                 </div>
                 <div class="view-section">
                     ${Player.subheader('Recently Played')}
@@ -38,8 +38,10 @@ var View = {
             var options = {
                 clickEvent: clickEvent,
                 text: song.name,
+                subtext: song.artist,
                 artwork: artwork,
                 song: song,
+                classes: '',
                 id: ViewManager.getId(song.artist, song.name)
             }
             view = view.concat(
@@ -56,6 +58,7 @@ var View = {
                 classes: 'dark-result',
                 clickEvent: `ViewManager.changeView('${artist}')`,
                 text: artist,
+                arrow: true,
             }
             view = view.concat(
                 SearchResult.element(options)
@@ -86,6 +89,8 @@ var View = {
             var options = {
                 clickEvent: `PlaylistManager.getPlaylist('${playlist.name}')`,
                 text: playlist.name,
+                subtext: playlist.description,
+                arrow: true,
             }
             view = view.concat(
                 SearchResult.element(options)
@@ -122,6 +127,7 @@ var View = {
                     var options = {
                         clickEvent: clickEvent,
                         text: song.name,
+                        subtext: song.artist,
                         artwork: artwork,
                         song: song,
                         id: ViewManager.getId(song.artist, song.name)
@@ -156,6 +162,45 @@ var View = {
         var text = $(form).find('.searchbar').val();
         ApiManager.search(text);
         return View.navContainer('', '', 'Library', 'result-container');
+    },
+
+    settings: () => {
+        var themeButtonOptions = {
+            clickEvent: 'ThemeManager.toggleTheme()',
+            text: 'Theme',
+            subtext: 'Choose between Apple Music or Spotify',
+        };
+        var uploadButtonOptions = {
+            clickEvent: "ViewManager.changeView('upload')",
+            text: 'Upload Music',
+            subtext: 'Add a song to your library',
+            arrow: true,
+        };
+        var cacheButtonOptions = {
+            clickEvent: "localStorage.clear(); location.reload()",
+            text: 'Clear Cache',
+            subtext: 'Remove all local storage (dev)',
+        };
+
+        var view = `
+            ${SearchResult.element(themeButtonOptions)}
+            <!--${SearchResult.element(uploadButtonOptions)}-->
+            ${SearchResult.element(cacheButtonOptions)}
+
+        `;
+        return View.navContainer(view, 'Settings', 'Library');
+    },
+
+    upload: () => {
+        var view = `
+            <form action="upload_music.php" method="post" enctype="multipart/form-data" target="upload_target">
+                File: <input name="myfile" type="file" />
+                <input type="submit" name="submitBtn" value="Upload" />
+            </form>
+
+            <iframe id="upload_target" name="upload_target" src="#"> </iframe>
+        `;
+        return View.navContainer(view, 'Upload', 'Settings');
     },
 
     emptyView: (title) => {

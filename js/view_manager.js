@@ -8,12 +8,13 @@ var ViewManager = {
         $('.player').empty().append(view);
         if (ViewManager.viewStack.length == 0) {
             ViewManager.updateRecentlyPlayed();
+            ViewManager.updatePlayerState();
         }
     },
 
     getId: (artist, name) => {
-        artist = artist.replace(/\s+/g, '-').toLowerCase();
-        name = name.replace(/\s+/g, '-').toLowerCase();
+        artist = artist.replace(/[\s+.()]/g, '-').toLowerCase();
+        name = name.replace(/[\s+.()]/g, '-').toLowerCase();
         return `${artist}-${name}`;
     },
 
@@ -26,6 +27,8 @@ var ViewManager = {
             $('.blur').css('background', `url('${artwork}') no-repeat`);
             $('.blur').css('background-size', `cover`);
             $('#artwork-fullscreen, .artwork-container').html(`<img src="${artwork}">`);
+            $('.search-result').removeClass('song-playing');
+            $(`#${id}`).addClass('song-playing');
 
             $('.song-title').text(song.name);
             $('.song-album').html(`${song.artist} &mdash; ${song.album}`);
@@ -88,6 +91,12 @@ var ViewManager = {
             case 'empty':
                 view = View.emptyView(option);
                 break;
+            case 'settings':
+                view = View.settings();
+                break;
+            case 'upload':
+                view = View.upload();
+                break;
             default:
                 view = View.albumsByArtist(id);
                 break;
@@ -118,7 +127,7 @@ var ViewManager = {
                 text: song.name,
                 song: song,
                 id: ViewManager.getId(song.artist, song.name),
-                isPlaying: (currentSong && song.url == currentSong.url) ? true : false,
+                isPlaying: (currentSong && song.url == currentSong.url),
             }
             view = view.concat(
                 SearchResult.element(options)

@@ -12,7 +12,8 @@
   font-style: normal; }
 html {
   touch-action: manipulation;
-  font-family: 'San Francisco Display'; }
+  font-family: 'San Francisco Display';
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
 body {
   font: 100% "San Francisco Display";
@@ -143,30 +144,32 @@ body {
   cursor: pointer; }
   .search-result:hover {
     background: #282828; }
+  .search-result.song-playing p {
+    color: dodgerblue; }
   .search-result .result-info {
     display: flex;
     flex: 1;
     padding-left: 1em; }
   .search-result .result-options {
-    display: flex; }
+    display: flex;
+    min-width: 0.75em;
+    color: #BFBFBF; }
+    .search-result .result-options .nav-arrow {
+      font-size: 3em;
+      width: 0.75em; }
   .search-result p {
-    text-align: left;
-    line-height: 1em;
-    margin-top: .2em;
-    height: 1em;
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis; }
-    .search-result p:nth-child(1) {
-      margin: auto;
-      height: 100%;
-      font-size: 1.8em;
-      line-height: 2.1em; }
-    .search-result p:nth-child(2) {
-      margin: auto;
-      height: 60%;
-      font-size: .8em;
-      line-height: 1.6em; }
+    font-size: 2em;
+    margin: 0; }
+  .search-result .result-text-container {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5em;
+    padding: 0.5em 0 0 1em; }
+    .search-result .result-text-container p {
+      font-size: 1.1em; }
+      .search-result .result-text-container p:last-child {
+        font-size: 0.9em;
+        color: gray; }
   .search-result .result-options {
     display: flex; }
   .search-result img {
@@ -186,14 +189,17 @@ body {
     height: 1.5em;
     width: 1.5em;
     margin-top: 1.25em;
-    filter: invert(1); }
+    filter: invert(1);
+    pointer-events: none; }
 
-.theme-changer {
+#settings-button {
   position: absolute;
-  top: 1em;
+  font-size: 1.5em;
+  top: 1.7em;
   right: 1em;
-  z-index: 2;
   cursor: pointer; }
+  #settings-button:active {
+    filter: opacity(0.5); }
 
 form#search {
   display: none;
@@ -228,7 +234,8 @@ form#library-search {
 
 form#playlist-creator-form {
   display: flex;
-  flex-direction: column; }
+  flex-direction: column;
+  padding-right: 1em; }
   form#playlist-creator-form input {
     -webkit-appearance: none;
     border: none;
@@ -313,7 +320,7 @@ form#playlist-creator-form {
 .controls {
   z-index: 4;
   position: fixed;
-  height: 84px;
+  height: 6em;
   width: 100%;
   margin: auto;
   display: flex;
@@ -323,8 +330,7 @@ form#playlist-creator-form {
   right: 0;
   bottom: 0;
   transition: all 0.25s;
-  transform: translate3d(0, 0, 0);
-  animation: hide-fullscreen-controls 0.25s; }
+  transform: translate3d(0, 0, 0); }
   .controls.playing #artwork-fullscreen img {
     height: 110%; }
   .controls.fullscreen {
@@ -351,8 +357,7 @@ form#playlist-creator-form {
   .controls #mini-controls {
     position: relative;
     display: flex;
-    height: 84px;
-    line-height: 84px;
+    line-height: 4em;
     font-size: 24px;
     width: 100%;
     color: #white; }
@@ -373,7 +378,7 @@ form#playlist-creator-form {
       .controls #mini-controls .artwork-container img {
         height: 60px;
         width: auto;
-        margin: 12px;
+        margin: 19px 1em;
         border-radius: 4px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.25); }
     .controls #mini-controls .song-title {
@@ -462,7 +467,7 @@ form#playlist-creator-form {
   .controls .volume-bar {
     -webkit-appearance: none;
     width: 100%;
-    max-width: 25em;
+    max-width: 28em;
     height: 5px;
     background: #CCCACA;
     outline: none;
@@ -489,6 +494,7 @@ form#playlist-creator-form {
     max-width: 40em; } }
 @media screen and (min-width: 1200px) {
   .controls {
+    z-index: 2;
     position: relative;
     height: 100% !important;
     box-shadow: none !important;
@@ -576,6 +582,8 @@ form#playlist-creator-form {
     font-size: 1.8em;
     color: #65c5ff;
     cursor: pointer; }
+    .nav-header .back-button:active {
+      filter: opacity(0.5); }
   .nav-header .nav-header-title {
     position: absolute;
     left: 0;
@@ -687,6 +695,7 @@ form#playlist-creator-form {
   .view-container#recently-played-container {
     padding: 1em 0 6em 0; }
   .view-container div.view-section {
+    position: relative;
     max-width: 70em;
     margin: auto; }
     .view-container div.view-section#album-container {
@@ -896,25 +905,35 @@ form#playlist-creator-form {
       display: none; }
     .apple-music .nav-header .back-button {
       color: #ff2d55; }
-  .apple-music #library-search input, .apple-music input [type=text] {
+  .apple-music #library-search input, .apple-music input [type=text], .apple-music form input {
     background: #f0f0f0; }
+  .apple-music #settings-button {
+    color: #ff2d55; }
   .apple-music .search-result {
     color: #ff2d55;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12); }
     .apple-music .search-result:hover {
       background: rgba(0, 0, 0, 0.05); }
+    .apple-music .search-result.song-playing p {
+      color: #ff2d55 !important; }
     .apple-music .search-result:active {
       background: #ff3b30;
       color: white; }
+      .apple-music .search-result:active .song-option-button img {
+        filter: invert(1); }
+      .apple-music .search-result:active p {
+        color: white !important; }
     .apple-music .search-result.dark-result {
       color: black; }
       .apple-music .search-result.dark-result:hover {
         background: #ebebeb;
         color: black; }
+    .apple-music .search-result .result-text-container p {
+      color: black; }
+      .apple-music .search-result .result-text-container p:last-child {
+        color: gray; }
     .apple-music .search-result .song-option-button img {
       filter: invert(0.5); }
-    .apple-music .search-result .song-option-button:hover {
-      background: rgba(0, 0, 0, 0.12); }
   .apple-music .album-item img {
     box-shadow: none;
     border: 1px solid rgba(0, 0, 0, 0.12);
@@ -937,7 +956,7 @@ form#playlist-creator-form {
       color: white; }
   .apple-music .toast {
     color: #868585;
-    background: rgba(241, 241, 241, 0.76);
+    background: #f1f1f1;
     box-shadow: 0 0 50px #9a9a9a; }
     .apple-music .toast img {
       filter: invert(0.6); }
@@ -959,8 +978,10 @@ form#playlist-creator-form {
       background: white; }
     .apple-music .controls #mini-controls {
       color: #424242; }
+      .apple-music .controls #mini-controls .playback-button {
+        filter: invert(0.7); }
     .apple-music .controls .playback-button {
-      filter: invert(0.7); }
+      filter: invert(1); }
     .apple-music .controls .progress-bar {
       background: #cccaca; }
       .apple-music .controls .progress-bar .progress {

@@ -1,7 +1,7 @@
 .controls {
     z-index: 4;
     position: fixed;
-    height: 84px;
+    height: 6em;
     width: 100%;
     margin: auto;
     display: flex;
@@ -12,7 +12,6 @@
     bottom: 0;
     transition: all 0.25s;
     transform: translate3d(0,0,0);
-    animation: hide-fullscreen-controls 0.25s;
 
 
     &.playing {
@@ -57,8 +56,7 @@
     #mini-controls {
         position: relative;
         display: flex;
-        height: 84px;
-        line-height: 84px;
+        line-height: 4em;
         font-size: 24px;
         width: 100%;
         color: #white;
@@ -87,7 +85,7 @@
             img {
                 height: 60px;
                 width: auto;
-                margin: 12px;
+                margin: 19px 1em;
                 border-radius: 4px;
                 box-shadow: 0 0 10px rgba(0,0,0, 0.25);
             }
@@ -218,7 +216,7 @@
     .volume-bar {
         -webkit-appearance: none;
         width: 100%;
-        max-width: 25em;
+        max-width: 28em;
         height: 5px;
         background: #CCCACA;
         outline: none;
@@ -247,6 +245,7 @@
 
 @media screen and (min-width: 1200px) {
     .controls {
+        z-index: 2;
         position: relative;
         height: 100% !important;
         box-shadow: none !important;

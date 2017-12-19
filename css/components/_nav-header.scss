@@ -26,6 +26,10 @@
         font-size: 1.8em;
         color: #65c5ff;
         cursor: pointer;
+
+        &:active {
+            filter: opacity(0.5);
+        }
     }
 
     .nav-header-title {

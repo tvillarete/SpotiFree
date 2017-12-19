@@ -38,6 +38,7 @@ form#library-search {
 form#playlist-creator-form {
     display: flex;
     flex-direction: column;
+    padding-right: 1em;
 
     input {
         -webkit-appearance: none;
@@ -50,5 +51,10 @@ form#playlist-creator-form {
         margin: 1em auto;
         border-radius: 4px;
         padding-left: 0.5em;
+    }
+}
+
+#mediaUploadForm {
+    #file-upload {
     }
 }
