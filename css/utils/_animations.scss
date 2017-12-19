@@ -5,6 +5,24 @@
     }
 }
 
+@keyframes reveal-fullscreen-controls {
+    0% {
+        transform: translateY(50%);
+    }
+}
+
+@keyframes hide-fullscreen-controls {
+    0% {
+        transform: translateY(-50%);
+    }
+}
+
+@keyframes reveal-popup {
+    0% {
+        transform: translateY(30em);
+    }
+}
+
 @-moz-keyframes spin {
     from { -moz-transform: rotate(0deg); }
     to { -moz-transform: rotate(360deg); }

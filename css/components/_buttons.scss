@@ -112,8 +112,11 @@
     text-align: center;
     cursor: pointer;
 
-    &:hover {
-        background: rgb(70,70,70);
+    img {
+        height: 1.5em;
+        width: 1.5em;
+        margin-top: 1.25em;
+        filter: invert(1);
     }
 }
 

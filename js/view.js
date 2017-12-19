@@ -158,6 +158,10 @@ var View = {
         return View.navContainer('', '', 'Library', 'result-container');
     },
 
+    emptyView: (title) => {
+        return View.navContainer('', title, 'Back', 'result-container');
+    },
+
     navContainer: (contents, title, backText, id) => {
         animation = !ViewManager.viewStack.length ? 'reveal-nav' : '';
         var view = `

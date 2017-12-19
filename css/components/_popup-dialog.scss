@@ -1,0 +1,51 @@
+.popup-dialog {
+    z-index: 5;
+    position: fixed;
+    bottom: 1em;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding: 0 0.75em;
+    max-width: 25em;
+    animation: reveal-popup 0.25s;
+
+    @media screen and (max-width: 750px) {
+        max-width: none;
+    }
+
+    div {
+        position: relative;
+        height: 3em;
+        line-height: 3em;
+        font-size: 1.7em;
+        text-align: center;
+        background: white;
+        color: dodgerblue;
+        width: 100%;
+        border-bottom: 1px solid rgba(0,0,0,0.12);
+        cursor: pointer;
+        box-shadow: $box-shadow;
+
+        &:active {
+            background: rgb(230,230,230);
+        }
+    }
+
+    .popup-option {
+        &:first-child {
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        &:nth-last-child(2) {
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+    }
+
+    .popup-cancel-button {
+        border-radius: 16px;
+        margin-top: 0.45em;
+        font-weight: bold;
+    }
+}

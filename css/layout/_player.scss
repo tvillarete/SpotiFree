@@ -1,5 +1,7 @@
 .player {
-    position: absolute;
+    position: relative;
+    flex: 1;
+    height: 100%;
     top: 0;
     left: 0;
     right: 0;

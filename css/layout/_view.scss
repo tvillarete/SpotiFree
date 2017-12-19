@@ -1,5 +1,6 @@
 .main {
     overflow: auto;
+    display: flex;
 
     .header {
         font-size: 4em;
@@ -15,7 +16,7 @@
 
 .view-container {
     flex: 1;
-    padding: 1em 0 6em 1em;
+    padding: 0 0 6em 1em;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
 
@@ -33,6 +34,7 @@
 
         &#album-container {
             display: flex;
+            margin-top: 1em;
             justify-content: center;
             flex-wrap: wrap;
             max-width: 60em;
@@ -91,6 +93,7 @@
     left: 0;
     right: 0;
     margin: auto;
+    padding: 1em;
     max-width: 35em;
     max-height: 45em;
     overflow: auto;

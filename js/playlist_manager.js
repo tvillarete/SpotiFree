@@ -93,7 +93,8 @@ var PlaylistManager = {
         return isValid;
     },
 
-    showSelector: (name, artist, album, url, artwork = null) => {
+    showSelector: (name, artist, album, url) => {
+        var artwork = ApiManager.getArtwork(artist, album);
         $('.main').append(`${Player.playlistModal(name, artist, album, url, artwork)}`);
     },
 

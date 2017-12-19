@@ -17,10 +17,12 @@ var AudioManager = {
                 }
             });
         }
+        AudioManager.isPlaying = true;
         AudioManager.setupAudio(name, artist, url);
         ViewManager.updatePlayerState();
         AudioManager.updateQueue();
-        AudioManager.isPlaying = true;
+        AudioManager.saveState();
+        AudioManager.resume();
     },
 
     updateQueue: () => {
@@ -56,7 +58,31 @@ var AudioManager = {
 
         $(".play").addClass('hidden');
         $(".pause").removeClass('hidden');
-        $(".audio").trigger("play");
+    },
+
+    setPlaylist: (newPlaylist) => {
+        AudioManager.playlist = newPlaylist;
+        localStorage.playlist = JSON.stringify(newPlaylist);
+    },
+
+    getState: () => {
+        AudioManager.playlist = localStorage.playlist ? JSON.parse(localStorage.playlist) : [];
+        AudioManager.index = localStorage.index ? parseInt(localStorage.index) : 0;
+
+        var song = AudioManager.getSongAtIndex();
+        if (song) {
+            AudioManager.setupAudio(song.name, song.artist, song.url);
+            var audio = document.getElementById('music');
+            if (localStorage.trackTime) {
+                audio.currentTime = parseFloat(localStorage.trackTime);
+            }
+            AudioManager.pause();
+        }
+    },
+
+    saveState: () => {
+        localStorage.playlist = JSON.stringify(AudioManager.playlist);
+        localStorage.index = AudioManager.index;
     },
 
     getSongAtIndex: (index = false) => {
@@ -78,6 +104,7 @@ var AudioManager = {
         } else {
             AudioManager.restartPlaylist();
         }
+        AudioManager.saveState();
     },
 
     restartPlaylist: () => {
@@ -97,6 +124,7 @@ var AudioManager = {
             $(".audio").trigger("play");
         }
         AudioManager.isPlaying = true;
+        ViewManager.updatePlayerState();
     },
 
     pause: () => {
@@ -104,6 +132,7 @@ var AudioManager = {
         $(".play").removeClass('hidden');
         $(".audio").trigger("pause");
         AudioManager.isPlaying = false;
+        ViewManager.updatePlayerState();
     },
 
     skip: () => {
@@ -219,17 +248,9 @@ function updateTrackTime(track){
     var time = track.currentTime;
     var duration = Math.floor(track.duration);
     var width = Math.floor(track.currentTime)/duration*100;
-    var mins = ~~(time / 60);
-    var secs = time % 60;
 
-    var hrs = ~~(time / 3600);
-    var mins = ~~((time % 3600) / 60);
-    var secs = time % 60;
-    secs = Number((secs).toFixed(0));
-    $(".progress").css("width",""+width+"%");
-    if (secs < 10) {
-        $("#current-time").text(`${mins}:0${secs}`);
-    } else {
-        $("#current-time").text(`${mins}:${secs}`);
-    }
+    $('.progress').css("width",""+width+"%");
+    $("#current-time").text(ApiManager.getTimeText(time));
+    $('#max-time').text(ApiManager.getTimeText(duration));
+    localStorage.trackTime = time;
 }

@@ -51,6 +51,15 @@ var ApiManager = {
         return `/SpotiFree/files/music/${artist}/${album}/Artwork.png`;
     },
 
+    getTimeText: (time) => {
+        var hrs = ~~(time / 3600);
+        var mins = ~~((time % 3600) / 60);
+        var secs = time % 60;
+        secs = Number((secs).toFixed(0));
+
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    },
+
     newRequest: (url, data) => {
         return $.ajax({
             url: url,

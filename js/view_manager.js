@@ -19,23 +19,26 @@ var ViewManager = {
 
     updatePlayerState: () => {
         var song = AudioManager.getSongAtIndex();
-        var artwork = ApiManager.getArtwork(song.artist, song.album);
-        var id = ViewManager.getId(song.artist, song.name);
+        if (song) {
+            var artwork = ApiManager.getArtwork(song.artist, song.album);
+            var id = ViewManager.getId(song.artist, song.name);
 
-        $('.blur').css('background', `url('${artwork}') no-repeat`);
-        $('.blur').css('background-size', `cover`);
-        $('#artwork-fullscreen, .artwork-container').html(`<img src="${artwork}">`);
+            $('.blur').css('background', `url('${artwork}') no-repeat`);
+            $('.blur').css('background-size', `cover`);
+            $('#artwork-fullscreen, .artwork-container').html(`<img src="${artwork}">`);
 
-        $('.song-title').text(song.name);
-        $('.song-album').html(`${song.artist} &mdash; ${song.album}`);
+            $('.song-title').text(song.name);
+            $('.song-album').html(`${song.artist} &mdash; ${song.album}`);
 
-        $('.search-result').removeClass('playing');
-        $('.controls').show();
-        $('.player').addClass('show-controls');
-    },
-
-    updatePlayerTime: track => {
-
+            $('.search-result').removeClass('playing');
+            $('.controls').show();
+            $('.player').addClass('show-controls');
+            if (AudioManager.isPlaying) {
+                $('.controls').addClass('playing');
+            } else {
+                $('.controls').removeClass('playing');
+            }
+        }
     },
 
     showFullscreenControls: () => {
@@ -81,6 +84,9 @@ var ViewManager = {
                 break;
             case 'search':
                 view = View.search(option);
+                break;
+            case 'empty':
+                view = View.emptyView(option);
                 break;
             default:
                 view = View.albumsByArtist(id);
@@ -138,5 +144,34 @@ var ViewManager = {
 
     updateRecentlyPlayed: () => {
         $('#recently-played-container').empty().append(View.recentlyPlayed());
-    }
+    },
+
+    performSearch: (query) => {
+        ViewManager.changeView('empty', query);
+        ApiManager.search(query);
+    },
+
+    toggleControlsDisabled: (value) => {
+        if (value === 'off') {
+            $('.controls-disabled').fadeOut('fast');
+            Controls.toggleFullscreen('off');
+            PopupDialog.remove();
+        } else if (value === 'on') {
+            $('.controls-disabled').fadeIn('fast');
+        } else {
+            $('.controls-disabled').fadeToggle('fast');
+        }
+    },
+
+    togglePopupDisabled: value => {
+        if (value === 'off') {
+            $('.popup-disabled').fadeOut('fast');
+            Controls.toggleFullscreen('off');
+            PopupDialog.remove();
+        } else if (value === 'on') {
+            $('.popup-disabled').fadeIn('fast');
+        } else {
+            $('.popup-disabled').fadeToggle('fast');
+        }
+    },
 }

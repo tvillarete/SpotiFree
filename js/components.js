@@ -4,6 +4,8 @@ var Player = {
         ApiManager.getAlbumData();
         View.init();
         Controls.init();
+        AudioManager.getState();
+        ViewManager.updatePlayerState();
         $(".logo-background").delay(2000).fadeOut("fast");
         if (localStorage.volume) {
             var volume = parseInt(localStorage.volume);
@@ -59,7 +61,6 @@ var Player = {
     playlistModal: (name, artist, album, url, artwork) => {
         PlaylistManager.getPlaylists();
         var view = `
-            <div class="disabled"></div>
             <div class="playlist-selector">
                 ${Player.header('Choose a playlist')}
         `;
@@ -105,13 +106,9 @@ var SearchResult = {
         }
         var artwork = ApiManager.getArtwork(song.artist, song.album);
         return `
-            <div class="song-option-button add-to-queue" onclick="AudioManager.addToQueue(
-                '${song.name}', '${song.artist}', '${song.album}', ${song.track}, '${song.url}'
-            )">Queue</div>
-            <div class="song-option-button add" onclick="PlaylistManager.showSelector(
-                '${song.name}', '${song.artist}', '${song.album}', '${song.url}', '${artwork}'
-            )">
-                <img src="/SpotiFree/files/images/playlist_add.png">
+            <div class="song-option-button add-to-queue"
+             onclick="PopupDialog.init('${song.name}', '${song.artist}', '${song.album}', '${song.track}', '${song.url}')">
+                <img src="files/images/dots.svg">
             </div>
         `;
     }
@@ -202,13 +199,19 @@ var AlbumView = {
 
 var Controls = {
     init: () => {
-        $('body').append(Controls.element());
+        $('.main').append(Controls.element());
         Controls.bindEvents();
     },
 
-    toggleFullscreen: () => {
-        $('.controls').toggleClass('fullscreen');
-        $('.disabled').fadeToggle();
+    toggleFullscreen: (value) => {
+        if (value === 'off') {
+            $('.controls').removeClass('fullscreen');
+        } else {
+            $('.controls').toggleClass('fullscreen');
+            if ($('.controls').hasClass('fullscreen')) {
+                ViewManager.toggleControlsDisabled('on');
+            }
+        }
     },
 
     bindEvents: () => {
@@ -242,8 +245,6 @@ var Controls = {
                     ${Controls.volume()}
                 </div>
             </div>
-            <div class="disabled controls-disabled" style="display: none;"
-             onclick="Controls.toggleFullscreen()"></div>
         `;
     },
 
@@ -252,16 +253,16 @@ var Controls = {
             <div id="mini-controls">
                 <div id="song-info-container" onclick="Controls.toggleFullscreen()">
                     <div class="artwork-container">
-                        <img src="/SpotiFree/files/music/Coldplay/All I Can Think About Is You/Artwork.png">
+                        <img src="/SpotiFree/files/images/logo.png">
                     </div>
-                    <div class="song-title">Kaleidoscope</div>
+                    <div class="song-title">SpotiFree</div>
                 </div>
                 <div id="playback-container">
                     ${Button.playbackButton('play', 'AudioManager.resume()', 'play_arrow.svg')}
                     ${Button.playbackButton('pause hidden', 'AudioManager.pause()', 'pause.svg')}
                     ${Button.playbackButton('', 'AudioManager.skip()', 'skip_next.svg')}
                 </div>
-                <div class="playback-button" id="arrow-down" onclick="Controls.toggleFullscreen()">&times;</div>
+                <div class="playback-button" id="arrow-down" onclick="ViewManager.toggleControlsDisabled('off')">&times;</div>
             </div>
         `;
     },
@@ -269,7 +270,7 @@ var Controls = {
     fullArtwork: () => {
         return `
             <div id="artwork-fullscreen">
-                <img src="/SpotiFree/files/music/Coldplay/All I Can Think About Is You/Artwork.png">
+                <img src="/SpotiFree/files/images/logo.png">
             </div>
         `;
     },
@@ -283,7 +284,7 @@ var Controls = {
             </div>
             <div class="track-time-container">
                 <div id="current-time">0:00</div>
-                <div id="max-time">3:15</div>
+                <div id="max-time">0:00</div>
             </div>
         `;
     },
@@ -291,8 +292,8 @@ var Controls = {
     fullscreenInfo: () => {
         return `
             <div class="song-info-container">
-                <div class="song-title">Kaleidoscope</div>
-                <div class="song-album">A Head Full of Dreams</div>
+                <div class="song-title">SpotiFree</div>
+                <div class="song-album">By Tanner Villarete</div>
             </div>
         `;
     },
@@ -313,5 +314,86 @@ var Controls = {
             <input class="volume-bar" id="vol-control" type="range" min="0" value="35" max="100" step="1"
              oninput="AudioManager.setVolume(this.value)" onchange="AudioManager.setVolume(this.value)">
         `;
+    }
+}
+
+var searchResultOptions = (song) => {
+    return {
+        buttons: {
+            0: {
+                text: 'Add to Queue',
+                clickEvent: `AudioManager.addToQueue(
+                    '${song.name}', '${song.artist}', '${song.album}', '${song.track}', '${song.url}'
+                )`
+            },
+            1: {
+                text: 'Add to Playlist',
+                clickEvent: `PlaylistManager.showSelector(
+                    '${song.name}', '${song.artist}', '${song.album}', '${song.url}'
+                )`
+            },
+            2: {
+                text: 'View Artist',
+                clickEvent: `ViewManager.performSearch('${song.artist}')`
+            },
+            3: {
+                text: 'View Album',
+                clickEvent: `ViewManager.performSearch('${song.album}')`
+            },
+        }
+    }
+}
+
+var PopupDialog = {
+    init: (name, artist, album, track, url) => {
+        var song = {
+            name: name,
+            artist: artist,
+            album: album,
+            track: track,
+            url: url
+        }
+        var options = searchResultOptions(song);
+        ViewManager.togglePopupDisabled('on');
+        $('body').append(PopupDialog.element(options));
+    },
+
+    element: (options) => {
+        var buttons = '';
+        $.each(options.buttons, function(index, button) {
+            buttons = buttons.concat(
+                PopupDialog.optionButton(button.text, button.clickEvent)
+            );
+        })
+        return `
+            <div class="popup-dialog ${options.className}">
+                ${buttons}
+                ${PopupDialog.cancelButton()}
+            </div>
+        `;
+    },
+
+    optionButton: (text, clickEvent) => {
+        return `
+            <div class="popup-option" onclick="${clickEvent}; ViewManager.togglePopupDisabled('off')">
+                ${text}
+            </div>
+        `;
+    },
+
+    cancelButton: () => {
+        return `
+            <div class="popup-cancel-button" onclick="ViewManager.togglePopupDisabled('off')">
+                Cancel
+            </div>
+        `;
+    },
+
+    remove: () => {
+        $('.popup-dialog').animate({
+            bottom: '-=1000'
+        }, 250, function() {
+            $('.popup-dialog').remove();
+        });
     }
 }
