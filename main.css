@@ -357,6 +357,7 @@ form#playlist-creator-form {
   .controls #mini-controls {
     position: relative;
     display: flex;
+    height: 4em;
     line-height: 4em;
     font-size: 24px;
     width: 100%;
