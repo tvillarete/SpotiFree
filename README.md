@@ -1,6 +1,6 @@
 # SpotiFree
 
-Do you have an iTunes library full of music but are unable to listen to it everywhere like on Spotify or Apple Music? SpotiFree aims to tackle that exact issue by making your entire library available through this custom-built web application, hosted from any computer that can run an Apache server. 
+Spotify and Apple Music are awesome, but what if you already have an iTunes library full of music? Why should you have to pay to access your personal music library from anywhere via an Apple Music subscription? SpotiFree aims to tackle that exact issue by making your entire library available online through this custom-built web application, hosted from any personal computer that can run an Apache server. 
 
 # Features
 - Artist and Album views
