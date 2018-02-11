@@ -6,7 +6,7 @@ var ApiManager = {
 
         var data = $('#search').serialize();
         var request = $.ajax({
-            url: 'get_music.php',
+            url: 'php/get_music.php',
             type: 'post',
             data: data
         });
@@ -22,7 +22,7 @@ var ApiManager = {
 
     getArtistData: () => {
         ApiManager.newRequest(
-            'get_metadata.php',
+            'php/get_metadata.php',
             {type: 'artist'}).done(function(response) {
                 var item = JSON.parse(response);
                 $.each(item, function(index, item) {
@@ -34,7 +34,7 @@ var ApiManager = {
 
     getAlbumData: () => {
         ApiManager.newRequest(
-            'get_metadata.php',
+            'php/get_metadata.php',
             {type: 'album'}).done(function(response) {
                 var data = JSON.parse(response);
                 $.each(data, function(index, data) {

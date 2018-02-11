@@ -347,7 +347,7 @@ var searchResultOptions = (song) => {
             },
             2: {
                 text: 'View Artist',
-                clickEvent: `ViewManager.performSearch('${song.artist}')`
+                clickEvent: `ViewManager.changeView('${song.artist}')`
             },
             3: {
                 text: 'View Album',

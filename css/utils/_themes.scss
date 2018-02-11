@@ -85,6 +85,11 @@
                 background: rgb(235,235,235);
                 color: black;
             }
+
+            &:active {
+                background: rgb(230, 230, 230);
+                color: black !important;
+            }
         }
 
         .result-text-container {

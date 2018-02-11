@@ -13,8 +13,8 @@ var ViewManager = {
     },
 
     getId: (artist, name) => {
-        artist = artist.replace(/[\s+.()]/g, '-').toLowerCase();
-        name = name.replace(/[\s+.()]/g, '-').toLowerCase();
+        artist = artist.replace(/[\s+.()&]/g, '-').toLowerCase();
+        name = name.replace(/[\s+.()&]/g, '-').toLowerCase();
         return `${artist}-${name}`;
     },
 
@@ -22,6 +22,8 @@ var ViewManager = {
         var song = AudioManager.getSongAtIndex();
         if (song) {
             var artwork = ApiManager.getArtwork(song.artist, song.album);
+
+            // Used to highlight currently playing song
             var id = ViewManager.getId(song.artist, song.name);
 
             $('.blur').css('background', `url('${artwork}') no-repeat`);

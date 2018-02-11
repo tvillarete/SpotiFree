@@ -136,7 +136,7 @@ var AudioManager = {
     },
 
     skip: () => {
-       var audio = document.getElementById("music");
+        var audio = document.getElementById("music");
 
         if (AudioManager.index < AudioManager.playlist.length-1) {
             AudioManager.index++;
@@ -215,7 +215,9 @@ var AudioManager = {
                     }
             } else if (e.keyCode === 8) {
                 e.preventDefault();
-                ViewManager.back();
+                if (ViewManager.viewStack.length) {
+                    ViewManager.back();
+                }
             }
         }
     }
@@ -253,4 +255,8 @@ function updateTrackTime(track){
     $("#current-time").text(ApiManager.getTimeText(time));
     $('#max-time').text(ApiManager.getTimeText(duration));
     localStorage.trackTime = time;
+    if (time >= duration && AudioManager.playlist.length-1 == AudioManager.index) {
+        AudioManager.previous();
+        AudioManager.pause();
+    }
 }

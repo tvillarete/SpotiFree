@@ -325,7 +325,7 @@ form#playlist-creator-form {
   margin: auto;
   display: flex;
   flex-direction: column;
-  background: #1F1F1F;
+  background: #1f1f1ff5;
   left: 0;
   right: 0;
   bottom: 0;
@@ -929,6 +929,9 @@ form#playlist-creator-form {
       .apple-music .search-result.dark-result:hover {
         background: #ebebeb;
         color: black; }
+      .apple-music .search-result.dark-result:active {
+        background: #e6e6e6;
+        color: black !important; }
     .apple-music .search-result .result-text-container p {
       color: black; }
       .apple-music .search-result .result-text-container p:last-child {
