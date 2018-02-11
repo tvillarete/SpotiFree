@@ -2,6 +2,9 @@ var View = {
     init: () => {
         $('.player').empty().append(View.main());
         ThemeManager.setCurrentTheme();
+
+        // When the user right clicks
+        ViewManager.bindContextHandler();
     },
 
     main: () => {

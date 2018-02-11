@@ -10,6 +10,8 @@ var ViewManager = {
             ViewManager.updateRecentlyPlayed();
             ViewManager.updatePlayerState();
         }
+        // When the user right clicks
+        ViewManager.bindContextHandler();
     },
 
     getId: (artist, name) => {
@@ -108,6 +110,17 @@ var ViewManager = {
         $('.view-container, .back-button, .nav-header-title').removeClass('slide-in-left');
         $('.view-container, .back-button').addClass('slide-in-right');
         $('.player').empty().append(view);
+
+        // When the user right clicks
+        ViewManager.bindContextHandler();
+    },
+
+    bindContextHandler: () => {
+        $('.search-result').contextmenu(function() {
+            var id = $(this).attr('id');
+            $(`#${id} .song-option-button`).trigger('click');
+            return false;
+        });
     },
 
     populateResults: () => {
